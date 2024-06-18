@@ -52,7 +52,7 @@ private:
     const int maxLockStateMoves = 15;
     const float blockLockTime = 0.5f;
     int currentLevel;
-    const int startingLevel = 1;
+    const int startingLevel = 5;
     const int maxScore = 10000;
     const float inputDelay = 0.15f;
     const float rotateInputDelay = 0.2f;

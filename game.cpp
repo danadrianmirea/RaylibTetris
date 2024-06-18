@@ -155,12 +155,6 @@ void Game::HandleInput()
                     //PlaySound(manipulateSound);
                 }
             }
-
-            if (IsKeyDown(KEY_SPACE))
-            {
-                HardDropBlock();
-                lastInputTime = 0.0f;
-            }
         }
 
         if (lastRotateInputTime >= rotateInputDelay)

@@ -50,7 +50,7 @@ private:
     bool lockBlock;
     float lockBlockTimer;
     int lockStateMoves;
-    const int maxLockStateMoves = 5;
+    const int maxLockStateMoves = 15;
     const float blockLockTime = 0.5f;
     int currentLevel;
     const int startingLevel = 3;

@@ -73,9 +73,6 @@ void Game::Update()
         if (lockBlockTimer > blockLockTime)
         {
             LockBlock();
-            lockBlock = false;
-            lockBlockTimer = 0.0f;
-            lockStateMoves = 0;
         }
     }
 }
@@ -186,7 +183,7 @@ void Game::HandleInput()
                 {
                     // reset lock timer on good move
                     lockBlockTimer = 0.0f;
-                    lockStateMoves = 0;
+                    lockStateMoves++;
                 }
             }
         }
@@ -255,6 +252,11 @@ void Game::MoveBlockDown()
     {
         currentBlock.Move(-1, 0);
         lockBlock = true;
+        //std::cout << "LM: " <<lockStateMoves << "\n";
+        if(lockStateMoves >= maxLockStateMoves)
+        {
+            LockBlock();
+        }
     }
     else
     {
@@ -385,6 +387,9 @@ void Game::LockBlock()
     }
 
     currentBlock = nextBlock;
+    lockBlock = false;
+    lockBlockTimer = 0.0f;
+    lockStateMoves = 0;
 
     if (BlockFits() == false)
     {
@@ -404,6 +409,7 @@ void Game::LockBlock()
 
         //PlaySound(manipulateSound);
     }
+
 }
 
 void Game::UpdateScore(int clearedRows)

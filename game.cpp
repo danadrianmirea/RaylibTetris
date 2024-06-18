@@ -22,7 +22,9 @@ Game::Game()
     font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
     InitAudioDevice();
     music = LoadMusicStream("Sounds/music.mp3");
-    // PlayMusicStream(music);
+    SetMusicVolume(music, 0.3f);
+    PlayMusicStream(music);
+    
     manipulateSound = LoadSound("Sounds/rotate.mp3");
     clearSound = LoadSound("Sounds/clear.mp3");
     Init();
@@ -184,7 +186,7 @@ void Game::HandleInput()
                 {
                     // reset lock timer on good move
                     lockBlockTimer = 0.0f;
-                    lockStateMoves++;
+                    lockStateMoves = 0;
                 }
             }
         }
@@ -235,6 +237,17 @@ bool Game::MoveBlockRightRepeat(int count)
     return true;
 }
 
+bool Game::MoveBlockUpRepeat(int count)
+{
+    currentBlock.Move(-count, 0);
+    if (IsBlockOutside() || BlockFits() == false)
+    {
+        currentBlock.Move(count, 0);
+        return false;
+    }
+    return true;
+}
+
 void Game::MoveBlockDown()
 {
     currentBlock.Move(1, 0);
@@ -242,6 +255,12 @@ void Game::MoveBlockDown()
     {
         currentBlock.Move(-1, 0);
         lockBlock = true;
+    }
+    else
+    {
+        lockBlockTimer = 0.0f;
+        lockBlock = false;
+        lockStateMoves = 0;
     }
 }
 
@@ -292,6 +311,7 @@ void Game::TryToMoveBlockInside()
 
     int numMovesLeft = 0;
     int numMovesRight = 0;
+    int numMovesUp = 0;
     int n;
 
     for (Position item : tiles)
@@ -311,7 +331,16 @@ void Game::TryToMoveBlockInside()
             if (numMovesLeft < n)
             {
                 numMovesLeft = n;
-                //std::cout << "numMovesLeft: " << numMovesLeft << "\n";
+                // std::cout << "numMovesLeft: " << numMovesLeft << "\n";
+            }
+        }
+
+        if (item.row > grid.GetNumRows() - 1)
+        {
+            n = item.row - (grid.GetNumRows() - 1);
+            if(numMovesUp < n)
+            {
+                numMovesUp = n;
             }
         }
     }
@@ -323,6 +352,10 @@ void Game::TryToMoveBlockInside()
     else if (numMovesRight)
     {
         MoveBlockRightRepeat(numMovesRight);
+    }
+    if (numMovesUp)
+    {
+        MoveBlockUpRepeat(numMovesUp);
     }
 }
 
@@ -369,7 +402,7 @@ void Game::LockBlock()
     else
     {
 
-        PlaySound(manipulateSound);
+        //PlaySound(manipulateSound);
     }
 }
 

@@ -29,6 +29,7 @@ private:
     bool MoveBlockLeftRepeat(int count);
     bool MoveBlockRight();
     bool MoveBlockRightRepeat(int count);
+    bool MoveBlockUpRepeat(int count);
     void MoveBlockDown();
     void HardDropBlock();
     void SnakeDropBlock();
@@ -49,12 +50,12 @@ private:
     bool lockBlock;
     float lockBlockTimer;
     int lockStateMoves;
-    const int maxLockStateMoves = 15;
+    const int maxLockStateMoves = 5;
     const float blockLockTime = 0.5f;
     int currentLevel;
-    const int startingLevel = 5;
+    const int startingLevel = 3;
     const int maxScore = 10000;
-    const float inputDelay = 0.15f;
-    const float rotateInputDelay = 0.2f;
+    const float inputDelay = 0.1f;
+    const float rotateInputDelay = 0.15f;
     const float softDropInputDelay = 0.1f;
 };

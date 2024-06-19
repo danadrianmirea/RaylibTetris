@@ -4,6 +4,10 @@
 
 using namespace std;
 
+#ifndef _DEBUG
+#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+#endif
+
 int main()
 {
     InitWindow(500, 620, "Tetris");

@@ -49,11 +49,11 @@ private:
     float lastSoftDropTimeTick;
     bool lockBlock;
     float lockBlockTimer;
-    int lockStateMoves;
-    const int maxLockStateMoves = 15;
     const float blockLockTime = 0.5f;
+    int lockStateMoves;
+    const int maxLockStateMoves = 5;
     int currentLevel;
-    const int startingLevel = 3;
+    const int startingLevel = 1;
     const int maxScore = 10000;
     const float inputDelay = 0.1f;
     const float rotateInputDelay = 0.15f;

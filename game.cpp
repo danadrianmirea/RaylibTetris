@@ -253,6 +253,7 @@ void Game::MoveBlockDown()
         currentBlock.Move(-1, 0);
         lockBlock = true;
         //std::cout << "LM: " <<lockStateMoves << "\n";
+        
         if(lockStateMoves >= maxLockStateMoves)
         {
             LockBlock();

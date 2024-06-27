@@ -24,7 +24,7 @@ Game::Game()
     music = LoadMusicStream("Sounds/music.mp3");
     SetMusicVolume(music, 0.3f);
     PlayMusicStream(music);
-    
+
     manipulateSound = LoadSound("Sounds/rotate.mp3");
     clearSound = LoadSound("Sounds/clear.mp3");
     Init();
@@ -140,7 +140,7 @@ void Game::HandleInput()
                 goodMove = MoveBlockLeft();
                 if (goodMove)
                 {
-                    //PlaySound(manipulateSound);
+                    // PlaySound(manipulateSound);
                 }
                 lastInputTime = 0.0f;
             }
@@ -151,7 +151,7 @@ void Game::HandleInput()
                 lastInputTime = 0.0f;
                 if (goodMove)
                 {
-                    //PlaySound(manipulateSound);
+                    // PlaySound(manipulateSound);
                 }
             }
         }
@@ -252,9 +252,9 @@ void Game::MoveBlockDown()
     {
         currentBlock.Move(-1, 0);
         lockBlock = true;
-        //std::cout << "LM: " <<lockStateMoves << "\n";
-        
-        if(lockStateMoves >= maxLockStateMoves)
+        // std::cout << "LM: " <<lockStateMoves << "\n";
+
+        if (lockStateMoves >= maxLockStateMoves)
         {
             LockBlock();
         }
@@ -295,9 +295,33 @@ void Game::SnakeDropBlock()
     }
 }
 
+bool Game::CheckBlockInAir()
+{
+    Block testBlock = currentBlock;
+    testBlock.Move(1, 0);
+    if (IsBlockOutside(testBlock) || BlockFits(testBlock) == false)
+    {
+        return false;
+    }
+    return true;
+}
+
 bool Game::IsBlockOutside()
 {
     std::vector<Position> tiles = currentBlock.GetCellPositions();
+    for (Position item : tiles)
+    {
+        if (grid.IsCellOutside(item.row, item.column))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Game::IsBlockOutside(Block block)
+{
+    std::vector<Position> tiles = block.GetCellPositions();
     for (Position item : tiles)
     {
         if (grid.IsCellOutside(item.row, item.column))
@@ -325,7 +349,7 @@ void Game::TryToMoveBlockInside()
             if (numMovesRight < -n)
             {
                 numMovesRight = -n;
-                //std::cout << "numMovesRight: " << numMovesRight << "\n";
+                // std::cout << "numMovesRight: " << numMovesRight << "\n";
             }
         }
         else if (item.column > grid.GetNumCols() - 1)
@@ -341,7 +365,7 @@ void Game::TryToMoveBlockInside()
         if (item.row > grid.GetNumRows() - 1)
         {
             n = item.row - (grid.GetNumRows() - 1);
-            if(numMovesUp < n)
+            if (numMovesUp < n)
             {
                 numMovesUp = n;
             }
@@ -375,12 +399,17 @@ bool Game::RotateBlock()
         currentBlock.UndoRotation();
         return false;
     }
-    //PlaySound(manipulateSound);
+    // PlaySound(manipulateSound);
     return true;
 }
 
 void Game::LockBlock()
 {
+    if (CheckBlockInAir())
+    {
+        return;
+    }
+
     std::vector<Position> tiles = currentBlock.GetCellPositions();
     for (Position item : tiles)
     {
@@ -408,9 +437,8 @@ void Game::LockBlock()
     else
     {
 
-        //PlaySound(manipulateSound);
+        // PlaySound(manipulateSound);
     }
-
 }
 
 void Game::UpdateScore(int clearedRows)
@@ -431,6 +459,20 @@ void Game::UpdateScore(int clearedRows)
 bool Game::BlockFits()
 {
     std::vector<Position> tiles = currentBlock.GetCellPositions();
+
+    for (Position item : tiles)
+    {
+        if (grid.IsCellEmpty(item.row, item.column) == false)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Game::BlockFits(Block block)
+{
+    std::vector<Position> tiles = block.GetCellPositions();
 
     for (Position item : tiles)
     {

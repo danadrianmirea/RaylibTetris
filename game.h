@@ -19,11 +19,13 @@ private:
     Block GetRandomBlock();
     std::vector<Block> GetAllBlocks();
     bool IsBlockOutside();
+    bool IsBlockOutside(Block block);
     void TryToMoveBlockInside();
     bool RotateBlock();
     void LockBlock();
     void UpdateScore(int clearedRows);
     bool BlockFits();
+    bool BlockFits(Block block);
     void Init();
     bool MoveBlockLeft();
     bool MoveBlockLeftRepeat(int count);
@@ -33,6 +35,7 @@ private:
     void MoveBlockDown();
     void HardDropBlock();
     void SnakeDropBlock();
+    bool CheckBlockInAir();
     Sound manipulateSound;
     Sound clearSound;
     Grid grid;

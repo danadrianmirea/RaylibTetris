@@ -18,6 +18,11 @@ bool EventTriggered(float interval)
 
 Game::Game()
 {
+    firstTimeGameStart = true;
+
+    targetRenderTex = LoadRenderTexture(gameScreenWidth, gameScreenHeight);
+    SetTextureFilter(targetRenderTex.texture, TEXTURE_FILTER_BILINEAR); // Texture scale filter to use
+
     grid = Grid();
     font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
     InitAudioDevice();
@@ -27,12 +32,45 @@ Game::Game()
 
     manipulateSound = LoadSound("Sounds/rotate.mp3");
     clearSound = LoadSound("Sounds/clear.mp3");
-    Init();
+
+    InitGame();
 }
+
+void Game::InitGame()
+{
+    grid.Initialize();
+    blocks = GetAllBlocks();
+    currentBlock = GetRandomBlock();
+    nextBlock = GetRandomBlock();
+    score = 0;
+    lockBlockTimer = 0.0f;
+    lockBlock = false;
+    lockStateMoves = 0;
+    currentLevel = startingLevel;
+    lastInputTime = inputDelay;
+    lastRotateInputTime = rotateInputDelay;
+    lastSoftDropTimeTick = softDropInputDelay;
+
+    isFirstFrameAfterReset = true;
+    isInExitMenu = false;
+    paused = false;
+    lostWindowFocus = false;
+    gameOver = false;
+
+    screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
+}
+
+void Game::Reset()
+{
+    InitGame();
+}
+
 
 Game::~Game()
 {
     CloseAudioDevice();
+    UnloadRenderTexture(targetRenderTex);
+    UnloadFont(font);
     UnloadMusicStream(music);
     UnloadSound(manipulateSound);
     UnloadSound(clearSound);
@@ -57,32 +95,52 @@ std::vector<Block> Game::GetAllBlocks()
 
 void Game::Update()
 {
-    HandleInput();
-    UpdateMusicStream(music);
-    if (gameOver == false)
+    screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
+    UpdateUI();
+
+    bool running = (firstTimeGameStart == false && paused == false && lostWindowFocus == false && isInExitMenu == false && gameOver == false);
+
+    if (running)
     {
+        HandleInput();
+        UpdateMusicStream(music);
+
         if (EventTriggered(0.9f / currentLevel))
         {
             MoveBlockDown();
         }
-    }
 
-    if (lockBlock)
-    {
-        lockBlockTimer += GetFrameTime();
-        if (lockBlockTimer > blockLockTime)
+        if (lockBlock)
         {
-            LockBlock();
+            lockBlockTimer += GetFrameTime();
+            if (lockBlockTimer > blockLockTime)
+            {
+                LockBlock();
+            }
         }
     }
 }
 
 void Game::Draw()
 {
+    // render everything to a texture
+    BeginTextureMode(targetRenderTex);
+    ClearBackground(darkBlue);
     grid.Draw();
     currentBlock.Draw(0, 0);
-
     DrawUI();
+
+    EndTextureMode();
+
+    // render the scaled frame texture to the screen
+    BeginDrawing();
+    ClearBackground(BLACK);
+    DrawTexturePro(targetRenderTex.texture, (Rectangle){0.0f, 0.0f, (float)targetRenderTex.texture.width, (float)-targetRenderTex.texture.height},
+                   (Rectangle){(GetScreenWidth() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeight() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
+                   (Vector2){0, 0}, 0.0f, WHITE);
+
+    DrawScreenSpaceUI();
+    EndDrawing();
 }
 
 void Game::DrawUI()
@@ -98,94 +156,196 @@ void Game::DrawUI()
     DrawTextEx(font, "Next", {365, 175}, fontSize, 2, WHITE);
     nextBlock.Draw(260, 260);
 
-    if (gameOver)
-    {
-        if (score < maxScore)
+    /*
+        if (gameOver)
         {
-            DrawTextEx(font, "Game Over", {320, 450}, fontSize, 2, WHITE);
-            DrawTextEx(font, "Press Space", {320, 490}, fontSize, 2, WHITE);
+            if (score < maxScore)
+            {
+                DrawTextEx(font, "Game Over", {320, 450}, fontSize, 2, WHITE);
+                DrawTextEx(font, "Press Space", {320, 490}, fontSize, 2, WHITE);
+            }
+            else
+            {
+                DrawTextEx(font, "You win!", {320, 450}, fontSize, 2, WHITE);
+                DrawTextEx(font, "Press Space", {320, 490}, fontSize, 2, WHITE);
+            }
         }
-        else
-        {
-            DrawTextEx(font, "You win!", {320, 450}, fontSize, 2, WHITE);
-            DrawTextEx(font, "Press Space", {320, 490}, fontSize, 2, WHITE);
-        }
-    }
-
+    */
     DrawTextEx(font, TextFormat("Level: %d", currentLevel), {345, 540}, fontSize, 2, WHITE);
+}
+
+void Game::DrawScreenSpaceUI()
+{
+     if (exitWindowRequested)
+    {
+        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Are you sure you want to exit? [Y/N]", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+    }
+    else if (firstTimeGameStart)
+    {
+        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Press SPACE to play", GetScreenWidth() / 2 - 200, GetScreenHeight() / 2, 40, yellow);
+    }
+    else if (paused)
+    {
+        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Game paused, press P to continue", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+    }
+    else if (lostWindowFocus)
+    {
+        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Game paused, focus window to continue", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+    }
+    else if (gameOver)
+    {
+        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Game over, press SPACE to play again", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+    }   
 }
 
 void Game::HandleInput()
 {
+    /*
     if (gameOver)
     {
         int keyPress = GetKeyPressed();
         if (keyPress == KEY_SPACE)
         {
-            Init();
+            InitGame();
         }
+    }
+
+    else
+    {
+    */
+    lastInputTime += GetFrameTime();
+    lastSoftDropTimeTick += GetFrameTime();
+    lastRotateInputTime += GetFrameTime();
+
+    bool goodMove = false;
+
+    if (lastInputTime >= inputDelay)
+    {
+        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+        {
+            goodMove = MoveBlockLeft();
+            if (goodMove)
+            {
+                // PlaySound(manipulateSound);
+            }
+            lastInputTime = 0.0f;
+        }
+
+        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
+        {
+            goodMove = MoveBlockRight();
+            lastInputTime = 0.0f;
+            if (goodMove)
+            {
+                // PlaySound(manipulateSound);
+            }
+        }
+    }
+
+    if (lastRotateInputTime >= rotateInputDelay)
+    {
+        if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
+        {
+            goodMove = RotateBlock();
+            lastRotateInputTime = 0.0f;
+        }
+    }
+
+    if (lastSoftDropTimeTick >= softDropInputDelay)
+    {
+        if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
+        {
+            // MoveBlockDown();
+            SnakeDropBlock();
+            lastSoftDropTimeTick = 0.0f;
+        }
+    }
+
+    if (goodMove)
+    {
+        if (lockBlock)
+        {
+            if (lockStateMoves < maxLockStateMoves)
+            {
+                // reset lock timer on good move
+                lockBlockTimer = 0.0f;
+                lockStateMoves++;
+            }
+        }
+    }
+    //}
+}
+
+void Game::UpdateUI()
+{
+    if (WindowShouldClose() || (IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false))
+    {
+        exitWindowRequested = true;
+        isInExitMenu = true;
+        return;
+    }
+
+    if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
+    {
+        if (fullscreen)
+        {
+            fullscreen = false;
+            SetWindowSize(windowWidth, windowHeight);
+        }
+        else
+        {
+            fullscreen = true;
+            SetWindowSize(windowWidth, windowHeight);
+        }
+        // ToggleFullscreen();
+        ToggleBorderlessWindowed();
+    }
+
+    if (firstTimeGameStart && IsKeyPressed(KEY_SPACE))
+    {
+        firstTimeGameStart = false;
+    }
+    else if (gameOver && IsKeyPressed(KEY_SPACE))
+    {
+        Reset();
+    }
+
+    if (exitWindowRequested)
+    {
+        if (IsKeyPressed(KEY_Y))
+        {
+            exitWindow = true;
+        }
+        else if (IsKeyPressed(KEY_N) || IsKeyPressed(KEY_ESCAPE))
+        {
+            exitWindowRequested = false;
+            isInExitMenu = false;
+        }
+    }
+
+    if (IsWindowFocused() == false)
+    {
+        lostWindowFocus = true;
     }
     else
     {
-        lastInputTime += GetFrameTime();
-        lastSoftDropTimeTick += GetFrameTime();
-        lastRotateInputTime += GetFrameTime();
+        lostWindowFocus = false;
+    }
 
-        bool goodMove = false;
-
-        if (lastInputTime >= inputDelay)
+    if (exitWindowRequested == false && lostWindowFocus == false && gameOver == false && isFirstFrameAfterReset == false && IsKeyPressed(KEY_P))
+    {
+        if (paused)
         {
-            if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
-            {
-                goodMove = MoveBlockLeft();
-                if (goodMove)
-                {
-                    // PlaySound(manipulateSound);
-                }
-                lastInputTime = 0.0f;
-            }
-
-            if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
-            {
-                goodMove = MoveBlockRight();
-                lastInputTime = 0.0f;
-                if (goodMove)
-                {
-                    // PlaySound(manipulateSound);
-                }
-            }
+            paused = false;
         }
-
-        if (lastRotateInputTime >= rotateInputDelay)
+        else
         {
-            if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
-            {
-                goodMove = RotateBlock();
-                lastRotateInputTime = 0.0f;
-            }
-        }
-
-        if (lastSoftDropTimeTick >= softDropInputDelay)
-        {
-            if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
-            {
-                // MoveBlockDown();
-                SnakeDropBlock();
-                lastSoftDropTimeTick = 0.0f;
-            }
-        }
-
-        if (goodMove)
-        {
-            if (lockBlock)
-            {
-                if (lockStateMoves < maxLockStateMoves)
-                {
-                    // reset lock timer on good move
-                    lockBlockTimer = 0.0f;
-                    lockStateMoves++;
-                }
-            }
+            paused = true;
         }
     }
 }
@@ -421,10 +581,12 @@ void Game::LockBlock()
     lockBlockTimer = 0.0f;
     lockStateMoves = 0;
 
-    if (BlockFits() == false)
-    {
-        gameOver = true;
-    }
+    /*
+        if (BlockFits() == false)
+        {
+            gameOver = true;
+        }
+        */
 
     nextBlock = GetRandomBlock();
     int numFullRows = grid.ClearFullRows();
@@ -450,10 +612,12 @@ void Game::UpdateScore(int clearedRows)
         currentLevel++;
     }
 
-    if (score >= maxScore)
-    {
-        gameOver = true;
-    }
+    /*
+        if (score >= maxScore)
+        {
+            gameOver = true;
+        }
+        */
 }
 
 bool Game::BlockFits()
@@ -482,21 +646,4 @@ bool Game::BlockFits(Block block)
         }
     }
     return true;
-}
-
-void Game::Init()
-{
-    gameOver = false;
-    grid.Initialize();
-    blocks = GetAllBlocks();
-    currentBlock = GetRandomBlock();
-    nextBlock = GetRandomBlock();
-    score = 0;
-    lockBlockTimer = 0.0f;
-    lockBlock = false;
-    lockStateMoves = 0;
-    currentLevel = startingLevel;
-    lastInputTime = inputDelay;
-    lastRotateInputTime = rotateInputDelay;
-    lastSoftDropTimeTick = softDropInputDelay;
 }

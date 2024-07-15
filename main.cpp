@@ -2,25 +2,34 @@
 #include "globals.h"
 #include "game.h"
 
-
 using namespace std;
 
 int main()
 {
-    InitWindow(500, 620, "Tetris");
+    InitWindow(gameScreenWidth, gameScreenHeight, "Tetris");
+    InitAudioDevice();
+    SetMasterVolume(0.22f);
+    SetExitKey(KEY_NULL);
+
+    windowWidth = GetScreenWidth();
+    windowHeight = GetScreenHeight();
+    SetWindowSize(windowWidth, windowHeight);
+
+    SetWindowPosition(50, 50);
     SetTargetFPS(144);
 
-    Game game;
 
-    while (WindowShouldClose() == false)
+    Game game;
+    ToggleBorderlessWindowed();
+
+    while (!exitWindow)
     {
         game.Update();
-        
-        BeginDrawing();
-        ClearBackground(darkBlue);
         game.Draw();
-        EndDrawing();
     }
+    
+    CloseAudioDevice();
+    CloseWindow();
 
     return 0;
 }

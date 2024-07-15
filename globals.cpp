@@ -5,8 +5,9 @@ Color darkGreen = Color{20, 160, 133, 255};
 Color grey = Color{29, 29, 27, 255};
 int windowWidth = 1920;
 int windowHeight = 1080;
-const int gameScreenWidth = 800;
-const int gameScreenHeight = 800;
+const int gameScreenWidth = 500;
+const int gameScreenHeight = 620;
+
 bool exitWindowRequested = false;
 bool exitWindow = false;
 bool fullscreen = true;

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 #include "globals.h"
 #include "grid.h"
 #include "blocks.h"
@@ -9,12 +9,31 @@ class Game
 public:
     Game();
     ~Game();
+    void InitGame();
+    void Reset();
+
+    Game(const Game &) = delete;
+    const Game &operator=(const Game &g) = delete;
+    Game(Game &&) = delete;
+    Game &&operator=(Game &&g) = delete;
+
     void Update();
+    void HandleInput();
+    void UpdateUI();
+
     void Draw();
     void DrawUI();
-    void HandleInput();
-    bool gameOver;
+    void DrawScreenSpaceUI();
+
+    std::string FormatWithLeadingZeroes(int number, int width);
+
     Music music;
+    bool firstTimeGameStart;
+    bool isFirstFrameAfterReset;
+    bool isInExitMenu;
+    bool paused;
+    bool lostWindowFocus;
+    bool gameOver;
 
 private:
     Block GetRandomBlock();
@@ -27,7 +46,7 @@ private:
     void UpdateScore(int clearedRows);
     bool BlockFits();
     bool BlockFits(Block block);
-    void Init();
+
     bool MoveBlockLeft();
     bool MoveBlockLeftRepeat(int count);
     bool MoveBlockRight();
@@ -62,4 +81,7 @@ private:
     const float inputDelay = 0.1f;
     const float rotateInputDelay = 0.15f;
     const float softDropInputDelay = 0.1f;
+
+    float screenScale;
+    RenderTexture2D targetRenderTex;
 };

@@ -582,6 +582,10 @@ void Game::UpdateScore(int clearedRows)
     if (score >= currentLevel * 1000)
     {
         currentLevel++;
+        if(currentLevel > 10)
+        {
+            currentLevel = 10;
+        }
     }
 
     /*

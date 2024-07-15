@@ -65,7 +65,6 @@ void Game::Reset()
     InitGame();
 }
 
-
 Game::~Game()
 {
     CloseAudioDevice();
@@ -156,27 +155,12 @@ void Game::DrawUI()
     DrawTextEx(font, "Next", {365, 175}, fontSize, 2, WHITE);
     nextBlock.Draw(260, 260);
 
-    /*
-        if (gameOver)
-        {
-            if (score < maxScore)
-            {
-                DrawTextEx(font, "Game Over", {320, 450}, fontSize, 2, WHITE);
-                DrawTextEx(font, "Press Space", {320, 490}, fontSize, 2, WHITE);
-            }
-            else
-            {
-                DrawTextEx(font, "You win!", {320, 450}, fontSize, 2, WHITE);
-                DrawTextEx(font, "Press Space", {320, 490}, fontSize, 2, WHITE);
-            }
-        }
-    */
     DrawTextEx(font, TextFormat("Level: %d", currentLevel), {345, 540}, fontSize, 2, WHITE);
 }
 
 void Game::DrawScreenSpaceUI()
 {
-     if (exitWindowRequested)
+    if (exitWindowRequested)
     {
         DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
         DrawText("Are you sure you want to exit? [Y/N]", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
@@ -200,11 +184,17 @@ void Game::DrawScreenSpaceUI()
     {
         DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
         DrawText("Game over, press SPACE to play again", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
-    }   
+    }
 }
 
 void Game::HandleInput()
 {
+    if (isFirstFrameAfterReset)
+    {
+        isFirstFrameAfterReset = false;
+        return;
+    }
+
     /*
     if (gameOver)
     {
@@ -288,22 +278,6 @@ void Game::UpdateUI()
         exitWindowRequested = true;
         isInExitMenu = true;
         return;
-    }
-
-    if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
-    {
-        if (fullscreen)
-        {
-            fullscreen = false;
-        }
-        else
-        {
-            fullscreen = true;
-        }
-        // ToggleFullscreen();
-
-        SetWindowSize(windowWidth, windowHeight);
-        ToggleBorderlessWindowed();
     }
 
     if (firstTimeGameStart && IsKeyPressed(KEY_SPACE))
@@ -581,12 +555,10 @@ void Game::LockBlock()
     lockBlockTimer = 0.0f;
     lockStateMoves = 0;
 
-    /*
-        if (BlockFits() == false)
-        {
-            gameOver = true;
-        }
-        */
+    if (BlockFits() == false)
+    {
+        gameOver = true;
+    }
 
     nextBlock = GetRandomBlock();
     int numFullRows = grid.ClearFullRows();

@@ -7,16 +7,14 @@ using namespace std;
 int main()
 {
     InitWindow(gameScreenWidth, gameScreenHeight, "Tetris");
+    SetWindowPosition(50, 50);
+    
     InitAudioDevice();
     SetMasterVolume(0.22f);
     SetExitKey(KEY_NULL);
 
     Game game;
-
-    SetWindowSize(windowWidth, windowHeight);
-    SetWindowPosition(50, 50);
     SetTargetFPS(144);
-    
     ToggleBorderlessWindowed();
 
     while (!exitWindow)
@@ -24,7 +22,7 @@ int main()
         game.Update();
         game.Draw();
     }
-    
+
     CloseAudioDevice();
     CloseWindow();
 

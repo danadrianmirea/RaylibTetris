@@ -295,14 +295,14 @@ void Game::UpdateUI()
         if (fullscreen)
         {
             fullscreen = false;
-            SetWindowSize(windowWidth, windowHeight);
         }
         else
         {
             fullscreen = true;
-            SetWindowSize(windowWidth, windowHeight);
         }
         // ToggleFullscreen();
+
+        SetWindowSize(windowWidth, windowHeight);
         ToggleBorderlessWindowed();
     }
 

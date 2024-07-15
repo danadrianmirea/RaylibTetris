@@ -1,5 +1,7 @@
 #include <iostream>
+#include <fstream>
 #include <random>
+#include <string>
 
 #include "game.h"
 
@@ -43,6 +45,7 @@ void Game::InitGame()
     currentBlock = GetRandomBlock();
     nextBlock = GetRandomBlock();
     score = 0;
+    highScore = LoadHighScoreFromFile();
     lockBlockTimer = 0.0f;
     lockBlock = false;
     lockStateMoves = 0;
@@ -146,14 +149,19 @@ void Game::DrawUI()
 {
     const int fontSize = 30;
 
-    DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, lightBlue);
-    DrawRectangleRounded(Rectangle{320, 215, 170, 180}, 0.3, 6, lightBlue);
-
     DrawTextEx(font, "Score", {365, 15}, fontSize, 2, WHITE);
-    DrawTextEx(font, TextFormat("%d", score), {365, 60}, fontSize, 2, WHITE);
+    DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, lightBlue);
+    std::string scoreText = FormatWithLeadingZeroes(score, 7);
+    DrawTextEx(font, scoreText.c_str(), {355, 65}, fontSize, 2, WHITE);
 
-    DrawTextEx(font, "Next", {365, 175}, fontSize, 2, WHITE);
-    nextBlock.Draw(260, 260);
+    DrawTextEx(font, "High Score", {325, 135}, fontSize, 2, WHITE);
+    DrawRectangleRounded(Rectangle{320, 175, 170, 60}, 0.3, 6, lightBlue);
+    std::string highScoreText = FormatWithLeadingZeroes(highScore, 7);
+    DrawTextEx(font, highScoreText.c_str(), {355, 185}, fontSize, 2, WHITE);
+
+    DrawRectangleRounded(Rectangle{320, 275, 170, 180}, 0.3, 6, lightBlue);
+    DrawTextEx(font, "Next", {365, 275}, fontSize, 2, WHITE);
+    nextBlock.Draw(260, 340);
 
     DrawTextEx(font, TextFormat("Level: %d", currentLevel), {345, 540}, fontSize, 2, WHITE);
 }
@@ -185,6 +193,53 @@ void Game::DrawScreenSpaceUI()
         DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
         DrawText("Game over, press SPACE to play again", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
     }
+}
+
+void Game::CheckForHighScore()
+{
+    if (score > highScore)
+    {
+        highScore = score;
+        SaveHighScoreToFile();
+    }
+}
+
+void Game::SaveHighScoreToFile()
+{
+    std::ofstream highScoreFile("highscore.txt");
+    if (highScoreFile.is_open())
+    {
+        highScoreFile << highScore;
+        highScoreFile.close();
+    }
+    else
+    {
+        std::cerr << "Failed to save highscore to file \n";
+    }
+}
+
+int Game::LoadHighScoreFromFile()
+{
+    int loadedHighScore = 0;
+    std::ifstream highscoreFile("highscore.txt");
+    if (highscoreFile.is_open())
+    {
+        highscoreFile >> loadedHighScore;
+        highscoreFile.close();
+    }
+    else
+    {
+        std::cerr << "Failed to load highscore from file\n";
+    }
+    return loadedHighScore;
+}
+
+std::string Game::FormatWithLeadingZeroes(int number, int width)
+{
+    std::string numberText = std::to_string(number);
+    int leadingZeros = width - numberText.length();
+    numberText = std::string(leadingZeros, '0') + numberText;
+    return numberText;
 }
 
 void Game::HandleInput()
@@ -588,12 +643,7 @@ void Game::UpdateScore(int clearedRows)
         }
     }
 
-    /*
-        if (score >= maxScore)
-        {
-            gameOver = true;
-        }
-        */
+    CheckForHighScore();
 }
 
 bool Game::BlockFits()

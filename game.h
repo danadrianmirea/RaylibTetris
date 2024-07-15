@@ -25,6 +25,11 @@ public:
     void DrawUI();
     void DrawScreenSpaceUI();
 
+    void CheckForHighScore();
+    void SaveHighScoreToFile();
+    int LoadHighScoreFromFile();
+
+
     std::string FormatWithLeadingZeroes(int number, int width);
 
     Music music;
@@ -65,6 +70,7 @@ private:
     Block nextBlock;
     Font font;
     int score;
+    int highScore;
 
     // input stuff
     float lastInputTime;

@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 #include "position.h"
-#include "colors.h"
+#include "globals.h"
 
 class Block
 {

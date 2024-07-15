@@ -1,5 +1,6 @@
 #pragma once
 
+#include "globals.h"
 #include "grid.h"
 #include "blocks.h"
 

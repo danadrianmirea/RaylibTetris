@@ -1,12 +1,9 @@
 #include <raylib.h>
+#include "globals.h"
 #include "game.h"
 
 
 using namespace std;
-
-#ifndef _DEBUG
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
-#endif
 
 int main()
 {

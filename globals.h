@@ -5,6 +5,7 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
+//#define AM_RAY_DEBUG
 
 extern Color darkGreen;
 extern Color grey;
@@ -16,6 +17,7 @@ extern const int gameScreenHeight;
 extern bool exitWindow;
 extern bool exitWindowRequested;
 extern bool fullscreen;
+extern const int minimizeOffset;
 extern float borderOffsetWidth;
 extern float borderOffsetHeight;
 

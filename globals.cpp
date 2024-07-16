@@ -11,6 +11,7 @@ const int gameScreenHeight = 620;
 bool exitWindowRequested = false;
 bool exitWindow = false;
 bool fullscreen = true;
+const int minimizeOffset = 50;
 float borderOffsetWidth = 20.0;
 float borderOffsetHeight = 50.0f;
 

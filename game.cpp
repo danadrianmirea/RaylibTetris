@@ -27,7 +27,6 @@ Game::Game()
 
     grid = Grid();
     font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
-    InitAudioDevice();
     music = LoadMusicStream("Sounds/music.mp3");
     SetMusicVolume(music, 0.3f);
     PlayMusicStream(music);
@@ -70,7 +69,6 @@ void Game::Reset()
 
 Game::~Game()
 {
-    CloseAudioDevice();
     UnloadRenderTexture(targetRenderTex);
     UnloadFont(font);
     UnloadMusicStream(music);
@@ -99,14 +97,14 @@ void Game::Update()
 {
     screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
     UpdateUI();
+    UpdateMusicStream(music);
 
     bool running = (firstTimeGameStart == false && paused == false && lostWindowFocus == false && isInExitMenu == false && gameOver == false);
 
     if (running)
     {
         HandleInput();
-        UpdateMusicStream(music);
-
+        
         if (EventTriggered(0.9f / currentLevel))
         {
             MoveBlockDown();

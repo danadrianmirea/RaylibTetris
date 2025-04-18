@@ -7,7 +7,7 @@
 
 #define WEB_WIDTH 960
 #define WEB_HEIGHT 540
-#define WEB_SCREEN_SCALE 0.8f
+#define WEB_SCREEN_SCALE 0.9f
 
 //#define AM_RAY_DEBUG
 

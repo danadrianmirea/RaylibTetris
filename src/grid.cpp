@@ -1,18 +1,19 @@
-#include <iostream>
 #include "grid.h"
 #include "globals.h"
+
 
 Grid::Grid()
 {
     numRows = defNumRows;
     numCols = defNumCols;
     cellSize = defCellSize;
-    Initialize();
     colors = GetCellColors();
+    Initialize();
 }
 
 void Grid::Initialize()
 {
+    // Clear the grid
     for (int row = 0; row < numRows; row++)
     {
         for (int col = 0; col < numCols; col++)
@@ -40,8 +41,7 @@ void Grid::Draw()
     {
         for (int col = 0; col < numCols; col++)
         {
-            int cellValue = grid[row][col];
-
+            int cellValue = grid[row][col]; 
             DrawRectangle(col * cellSize + 11, row * cellSize + 11, cellSize - 1, cellSize - 1, colors[cellValue]);
         }
     }

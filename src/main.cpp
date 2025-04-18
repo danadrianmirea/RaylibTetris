@@ -7,61 +7,59 @@
 #include <emscripten.h>
 #endif
 
-Game* game;
+Game* game = nullptr;
 
 using namespace std;
 
 void MainLoop(void* arg)
 {
-    Game* gamePtr = static_cast<Game*>(arg);
+    Game* gamePtr = static_cast<Game*>(arg); 
     gamePtr->Update();
     gamePtr->Draw();
 }
 
 int main()
 {
-    std::cout << "Starting Tetris application..." << std::endl;
-    
-    std::cout << "Initializing window..." << std::endl;
+#ifndef EMSCRIPTEN_BUILD
     InitWindow(gameScreenWidth, gameScreenHeight, "Tetris");
+#else
+    InitWindow(WEB_WIDTH, WEB_HEIGHT, "Tetris");
+#endif
 
     if (!IsWindowReady()) {
-        std::cerr << "Failed to initialize window!" << std::endl;
         return 1;
     }
-    std::cout << "Window initialized successfully" << std::endl;
 
 #ifndef EMSCRIPTEN_BUILD
     SetWindowPosition(50, 50);
     ToggleBorderlessWindowed();
 #endif
 
-    SetExitKey(KEY_NULL);    
+    SetExitKey(KEY_NULL);
     SetTargetFPS(144);
 
-    std::cout << "Creating game instance..." << std::endl;
     game = new Game();
-    std::cout << "Game instance created successfully" << std::endl;
-
-    std::cout << "Initializing game resources..." << std::endl;
+    if (!game) {
+        CloseWindow();
+        return 1;
+    }
     game->InitializeResources();
-    std::cout << "Game resources initialized successfully" << std::endl;
-
-    std::cout << "Entering main loop..." << std::endl;
+ 
 #ifdef EMSCRIPTEN_BUILD
-    emscripten_set_main_loop_arg(MainLoop, &game, 0, 1);
+    emscripten_set_main_loop_arg(MainLoop, game, 0, 1);
 #else
     while (!WindowShouldClose() && !exitWindow)
     {
         MainLoop(game);
     }
-    std::cout << "Exiting main loop..." << std::endl;
+#endif
 
     CloseAudioDevice();
     CloseWindow();
-#endif
 
-    delete game;
-    std::cout << "Application exiting normally" << std::endl;
+    if (game) {
+        delete game;
+        game = nullptr;
+    }
     return 0;
 }

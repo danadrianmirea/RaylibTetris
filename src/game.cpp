@@ -30,27 +30,29 @@ Game::Game()
 
 void Game::InitializeResources()
 {
-    // Initialize other resources
     targetRenderTex = LoadRenderTexture(gameScreenWidth, gameScreenHeight);
-    SetTextureFilter(targetRenderTex.texture, TEXTURE_FILTER_BILINEAR); // Texture scale filter to use
+    if (!targetRenderTex.texture.id) {
+        throw std::runtime_error("Failed to create render texture");
+    }
+    SetTextureFilter(targetRenderTex.texture, TEXTURE_FILTER_BILINEAR);
 
     grid = Grid();
+    
     font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
+    if (!font.texture.id) {
+        throw std::runtime_error("Failed to load font");
+    }
 }
 
 void Game::StartAudio()
 {
-    std::cout << "Initializing audio..." << std::endl;
-    
     // Check if audio device is already initialized
     if (!IsAudioDeviceReady()) {
         InitAudioDevice();
         if (!IsAudioDeviceReady()) {
-            std::cerr << "Failed to initialize audio device!" << std::endl;
-            return;  // Don't close window, just return
+            return;
         }
     }
-    std::cout << "Audio initialized successfully" << std::endl;
     
     SetMasterVolume(0.22f);
 
@@ -60,23 +62,24 @@ void Game::StartAudio()
 
     if (FileExists(rotatePath)) {
         manipulateSound = LoadSound(rotatePath);
-    } else {
-        std::cerr << "Warning: Rotate sound file not found: " << rotatePath << std::endl;
     }
 
     if (FileExists(clearPath)) {
         clearSound = LoadSound(clearPath);
-    } else {
-        std::cerr << "Warning: Clear sound file not found: " << clearPath << std::endl;
     }
 }
 
 void Game::InitGame()
 {
+    // Initialize grid first
     grid.Initialize();
+    
+    // Initialize blocks with error handling
     blocks = GetAllBlocks();
-    currentBlock = GetRandomBlock();  // Initialize currentBlock
+    currentBlock = GetRandomBlock();
     nextBlock = GetRandomBlock();
+    
+    // Initialize other game state
     score = 0;
     highScore = LoadHighScoreFromFile();
     lockBlockTimer = 0.0f;
@@ -90,7 +93,10 @@ void Game::InitGame()
 #ifndef EMSCRIPTEN_BUILD
     screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 #else
-    screenScale = WEB_SCREEN_SCALE;
+    // Calculate scale based on web canvas dimensions and desired scale
+    float widthScale = (float)WEB_WIDTH * WEB_SCREEN_SCALE / gameScreenWidth;
+    float heightScale = (float)WEB_HEIGHT * WEB_SCREEN_SCALE / gameScreenHeight;
+    screenScale = MIN(widthScale, heightScale);
 #endif
 }
 
@@ -119,7 +125,7 @@ Block Game::GetRandomBlock()
         return Block();
     }
     
-    int randomIndex = rand() % blocks.size();
+    int randomIndex = rand() % blocks.size();  
     Block block = blocks[randomIndex];
     blocks.erase(blocks.begin() + randomIndex);
     return block;
@@ -127,7 +133,16 @@ Block Game::GetRandomBlock()
 
 std::vector<Block> Game::GetAllBlocks()
 {
-    return {IBlock(), JBlock(), LBlock(), OBlock(), SBlock(), TBlock(), ZBlock()};
+    std::vector<Block> allBlocks;
+    allBlocks.reserve(7); // Pre-allocate space for all blocks    
+    allBlocks.push_back(IBlock());
+    allBlocks.push_back(JBlock());
+    allBlocks.push_back(LBlock());
+    allBlocks.push_back(OBlock());
+    allBlocks.push_back(SBlock());
+    allBlocks.push_back(TBlock());
+    allBlocks.push_back(ZBlock());
+    return allBlocks;
 }
 
 void Game::Update()
@@ -138,9 +153,7 @@ void Game::Update()
 
     UpdateUI();
 
-
     bool running = (firstTimeGameStart == false && paused == false && lostWindowFocus == false && isInExitMenu == false && gameOver == false);
-
     
     if (running)
     {
@@ -164,30 +177,34 @@ void Game::Update()
 void Game::Draw()
 {
     // render everything to a texture
-    BeginTextureMode(targetRenderTex);
-    ClearBackground(darkBlue);
-    grid.Draw();
-    currentBlock.Draw(0, 0);
-    DrawUI();
-
+    BeginTextureMode(targetRenderTex);      
+    ClearBackground(darkBlue);        
+    grid.Draw();      
+    currentBlock.Draw(0, 0);       
+    DrawUI();     
     EndTextureMode();
-
     // render the scaled frame texture to the screen
-    BeginDrawing();
-    ClearBackground(BLACK);
+    BeginDrawing();     
+    ClearBackground(BLACK);     
     DrawTexturePro(targetRenderTex.texture, (Rectangle){0.0f, 0.0f, (float)targetRenderTex.texture.width, (float)-targetRenderTex.texture.height},
                    (Rectangle){(GetScreenWidthWrapper() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeightWrapper() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
                    (Vector2){0, 0}, 0.0f, WHITE);
-    DrawScreenSpaceUI();
+
+    DrawScreenSpaceUI(); 
     EndDrawing();
 }
 
 void Game::DrawUI()
 {
+    // Check if resources are ready
+    if (!font.texture.id) {
+        return;
+    }
+    
     const int fontSize = 30;
-
+    
     DrawTextEx(font, "Score", {365, 15}, fontSize, 2, WHITE);
-    DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, lightBlue);
+    DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, lightBlue);    
     std::string scoreText = FormatWithLeadingZeroes(score, 7);
     DrawTextEx(font, scoreText.c_str(), {355, 65}, fontSize, 2, WHITE);
 
@@ -249,10 +266,6 @@ void Game::SaveHighScoreToFile()
         highScoreFile << highScore;
         highScoreFile.close();
     }
-    else
-    {
-        std::cerr << "Failed to save highscore to file \n";
-    }
 }
 
 int Game::LoadHighScoreFromFile()
@@ -264,45 +277,36 @@ int Game::LoadHighScoreFromFile()
         highscoreFile >> loadedHighScore;
         highscoreFile.close();
     }
-    else
-    {
-#ifndef EMSCRIPTEN_BUILD
-        std::cerr << "Failed to load highscore from file\n";
-#endif
-    }
     return loadedHighScore;
 }
 
 std::string Game::FormatWithLeadingZeroes(int number, int width)
 {
+    if (width <= 0) {
+        return "0";
+    }
+    
     std::string numberText = std::to_string(number);
+    if (numberText.length() > width) {
+        return std::string(width, '9');
+    }
+    
     int leadingZeros = width - numberText.length();
-    numberText = std::string(leadingZeros, '0') + numberText;
-    return numberText;
+    if (leadingZeros < 0) {
+        leadingZeros = 0;
+    }
+    
+    return std::string(leadingZeros, '0') + numberText;
 }
 
 void Game::HandleInput()
 {
-
     if (isFirstFrameAfterReset)
     {
         isFirstFrameAfterReset = false;
         return;
     }
 
-    /*
-    if (gameOver)
-    {
-        int keyPress = GetKeyPressed();
-        if (keyPress == KEY_ENTER)
-        {
-            InitGame();
-        }
-    }
-
-    else
-    {
-    */
     lastInputTime += GetFrameTime();
     lastSoftDropTimeTick += GetFrameTime();
     lastRotateInputTime += GetFrameTime();
@@ -363,7 +367,6 @@ void Game::HandleInput()
             }
         }
     }
-    //}
 }
 
 void Game::UpdateUI()
@@ -377,13 +380,12 @@ void Game::UpdateUI()
 
     if (firstTimeGameStart)
     {
-        std::cout << "Waiting for ENTER key press... firstTimeGameStart=" << firstTimeGameStart << std::endl;
         if (IsKeyPressed(KEY_ENTER))
         {
-            std::cout << "ENTER key pressed, starting game..." << std::endl;
             firstTimeGameStart = false;
-            StartAudio();  // Start audio on first user interaction
-            InitGame();    // Initialize game state when starting
+            // Initialize game state first
+            InitGame();
+            StartAudio();
         }
         return;
     }
@@ -397,8 +399,8 @@ void Game::UpdateUI()
         return;
     }
 
-
-#ifdef AM_RAY_DEBUG
+    
+    #ifdef AM_RAY_DEBUG
 #ifndef EMSCRIPTEN_BUILD
     if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
     {

@@ -21,6 +21,7 @@ bool EventTriggered(float interval)
 Game::Game()
 {
     firstTimeGameStart = true;
+    audioInitialized = false;
     isFirstFrameAfterReset = false;
     isInExitMenu = false;
     paused = false;
@@ -52,6 +53,7 @@ void Game::StartAudio()
         if (!IsAudioDeviceReady()) {
             return;
         }
+        audioInitialized = true;
     }
     
     SetMasterVolume(0.22f);
@@ -59,6 +61,7 @@ void Game::StartAudio()
     // Load audio resources after device is initialized
     const char* rotatePath = "Sounds/rotate.mp3";
     const char* clearPath = "Sounds/clear.mp3";
+    const char* musicPath = "Sounds/music.mp3";  // Using the new music.mp3 file
 
     if (FileExists(rotatePath)) {
         manipulateSound = LoadSound(rotatePath);
@@ -66,6 +69,12 @@ void Game::StartAudio()
 
     if (FileExists(clearPath)) {
         clearSound = LoadSound(clearPath);
+    }
+
+    if (FileExists(musicPath)) {
+        backgroundMusic = LoadMusicStream(musicPath);
+        SetMusicVolume(backgroundMusic, 0.5f);
+        PlayMusicStream(backgroundMusic);
     }
 }
 
@@ -104,6 +113,7 @@ Game::~Game()
     UnloadFont(font);
     UnloadSound(manipulateSound);
     UnloadSound(clearSound);
+    UnloadMusicStream(backgroundMusic);
 }
 
 Block Game::GetRandomBlock()
@@ -140,14 +150,14 @@ std::vector<Block> Game::GetAllBlocks()
 
 void Game::Update()
 {
-//#ifndef EMSCRIPTEN_BUILD
     screenScale = MIN((float)GetScreenWidthWrapper() / gameScreenWidth, (float)GetScreenHeightWrapper() / gameScreenHeight);
-//#endif
-
     UpdateUI();
+    
+    if (audioInitialized) {
+        UpdateMusicStream(backgroundMusic);
+    }
 
     bool running = (firstTimeGameStart == false && paused == false && lostWindowFocus == false && isInExitMenu == false && gameOver == false);
-    
     if (running)
     {
         HandleInput();        

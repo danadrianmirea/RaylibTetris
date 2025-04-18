@@ -39,6 +39,7 @@ public:
     bool paused;
     bool lostWindowFocus;
     bool gameOver;
+    bool audioInitialized;
 
 private:
     Block GetRandomBlock();
@@ -63,6 +64,7 @@ private:
     bool CheckBlockInAir();
     Sound manipulateSound;
     Sound clearSound;
+    Music backgroundMusic;
     Grid grid;
 
     std::vector<Block> blocks;

@@ -36,20 +36,39 @@ void Game::InitializeResources()
 
     grid = Grid();
     font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
-
-    // Load audio resources after device is initialized
-    music = LoadMusicStream("Sounds/music.mp3");
-    SetMusicVolume(music, 0.3f);
-    manipulateSound = LoadSound("Sounds/rotate.mp3");
-    clearSound = LoadSound("Sounds/clear.mp3");
-
-    // InitGame() is now called only when user presses ENTER
 }
 
 void Game::StartAudio()
 {
-    // Only handle playing the music, since device is already initialized
-    PlayMusicStream(music);
+    std::cout << "Initializing audio..." << std::endl;
+    
+    // Check if audio device is already initialized
+    if (!IsAudioDeviceReady()) {
+        InitAudioDevice();
+        if (!IsAudioDeviceReady()) {
+            std::cerr << "Failed to initialize audio device!" << std::endl;
+            return;  // Don't close window, just return
+        }
+    }
+    std::cout << "Audio initialized successfully" << std::endl;
+    
+    SetMasterVolume(0.22f);
+
+    // Load audio resources after device is initialized
+    const char* rotatePath = "Sounds/rotate.mp3";
+    const char* clearPath = "Sounds/clear.mp3";
+
+    if (FileExists(rotatePath)) {
+        manipulateSound = LoadSound(rotatePath);
+    } else {
+        std::cerr << "Warning: Rotate sound file not found: " << rotatePath << std::endl;
+    }
+
+    if (FileExists(clearPath)) {
+        clearSound = LoadSound(clearPath);
+    } else {
+        std::cerr << "Warning: Clear sound file not found: " << clearPath << std::endl;
+    }
 }
 
 void Game::InitGame()
@@ -84,7 +103,6 @@ Game::~Game()
 {
     UnloadRenderTexture(targetRenderTex);
     UnloadFont(font);
-    UnloadMusicStream(music);
     UnloadSound(manipulateSound);
     UnloadSound(clearSound);
 }
@@ -119,30 +137,7 @@ void Game::Update()
 #endif
 
     UpdateUI();
-    UpdateMusicStream(music);
 
-    if (firstTimeGameStart)
-    {
-        std::cout << "Waiting for ENTER key press... firstTimeGameStart=" << firstTimeGameStart << std::endl;
-        if (IsKeyPressed(KEY_ENTER))
-        {
-            std::cout << "ENTER key pressed, starting game..." << std::endl;
-            firstTimeGameStart = false;
-            StartAudio();  // Start audio on first user interaction
-            InitGame();    // Initialize game state when starting
-        }
-        return;
-    }
-
-    if (gameOver)
-    {
-        if (IsKeyPressed(KEY_ENTER))
-        {
-            Reset();
-            StartAudio();  // Restart audio when game is reset
-        }
-        return;
-    }
 
     bool running = (firstTimeGameStart == false && paused == false && lostWindowFocus == false && isInExitMenu == false && gameOver == false);
 
@@ -150,7 +145,6 @@ void Game::Update()
     if (running)
     {
         HandleInput();        
-        
         if (EventTriggered(0.9f / currentLevel))
         {
             MoveBlockDown();
@@ -184,7 +178,6 @@ void Game::Draw()
     DrawTexturePro(targetRenderTex.texture, (Rectangle){0.0f, 0.0f, (float)targetRenderTex.texture.width, (float)-targetRenderTex.texture.height},
                    (Rectangle){(GetScreenWidthWrapper() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeightWrapper() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
                    (Vector2){0, 0}, 0.0f, WHITE);
-
     DrawScreenSpaceUI();
     EndDrawing();
 }
@@ -381,6 +374,29 @@ void Game::UpdateUI()
         isInExitMenu = true;
         return;
     }
+
+    if (firstTimeGameStart)
+    {
+        std::cout << "Waiting for ENTER key press... firstTimeGameStart=" << firstTimeGameStart << std::endl;
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            std::cout << "ENTER key pressed, starting game..." << std::endl;
+            firstTimeGameStart = false;
+            StartAudio();  // Start audio on first user interaction
+            InitGame();    // Initialize game state when starting
+        }
+        return;
+    }
+
+    if (gameOver)
+    {
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            Reset();
+        }
+        return;
+    }
+
 
 #ifdef AM_RAY_DEBUG
 #ifndef EMSCRIPTEN_BUILD

@@ -6,7 +6,7 @@ A classic Tetris game implementation using the Raylib game development library.
 
 - Classic Tetris gameplay
 - High score tracking
-- Sound effects and background music
+- Sound effects
 - Smooth controls and animations
 - Next block preview
 - Score system

@@ -33,24 +33,10 @@ int main()
 
 #ifndef EMSCRIPTEN_BUILD
     SetWindowPosition(50, 50);
-#endif
-
-    std::cout << "Initializing audio..." << std::endl;
-    InitAudioDevice();
-    if (!IsAudioDeviceReady()) {
-        std::cerr << "Failed to initialize audio device!" << std::endl;
-        CloseWindow();
-        return 1;
-    }
-    std::cout << "Audio initialized successfully" << std::endl;
-    
-    SetMasterVolume(0.22f);
-    SetExitKey(KEY_NULL);
-    
-#ifndef EMSCRIPTEN_BUILD
     ToggleBorderlessWindowed();
 #endif
 
+    SetExitKey(KEY_NULL);    
     SetTargetFPS(144);
 
     std::cout << "Creating game instance..." << std::endl;

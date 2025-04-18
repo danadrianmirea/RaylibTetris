@@ -33,7 +33,6 @@ public:
 
     std::string FormatWithLeadingZeroes(int number, int width);
 
-    Music music;
     bool firstTimeGameStart;
     bool isFirstFrameAfterReset;
     bool isInExitMenu;

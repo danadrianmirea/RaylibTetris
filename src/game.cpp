@@ -229,13 +229,23 @@ void Game::DrawScreenSpaceUI()
     }
     else if (firstTimeGameStart)
     {
-        DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 500), (float)(GetScreenHeightWrapper() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Press ENTER to play", GetScreenWidthWrapper() / 2 - 200, GetScreenHeightWrapper() / 2, 40, yellow);
+        DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 430), (float)(GetScreenHeightWrapper() / 2 - 120), 860, 410}, 0.76f, 20, BLACK);
+        DrawText("RAYLIB TETRIS", GetScreenWidthWrapper() / 2 - 200, GetScreenHeightWrapper() / 2 - 100, 50, yellow);
+        DrawText("Controls:", GetScreenWidthWrapper() / 2 - 200, GetScreenHeightWrapper() / 2 - 30, 40, yellow);
+        DrawText("Left/Right Arrow or A/D: Move", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2 + 30, 30, WHITE);
+        DrawText("Up Arrow or W: Rotate", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2 + 70, 30, WHITE);
+        DrawText("Down Arrow or S: Soft Drop", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2 + 110, 30, WHITE);
+        DrawText("P: Pause", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2 + 150, 30, WHITE);
+        DrawText("Press ENTER to play", GetScreenWidthWrapper() / 2 - 200, GetScreenHeightWrapper() / 2 + 210, 40, yellow);
     }
     else if (paused)
     {
         DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 500), (float)(GetScreenHeightWrapper() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+    #ifndef EMSCRIPTEN_BUILD
         DrawText("Game paused, press P to continue", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2, 40, yellow);
+    #else
+        DrawText("Game paused, press P or ESC to continue", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2, 40, yellow);
+    #endif
     }
     else if (lostWindowFocus)
     {
@@ -371,12 +381,14 @@ void Game::HandleInput()
 
 void Game::UpdateUI()
 {
-    if (WindowShouldClose() || (IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false))
+#ifndef EMSCRIPTEN_BUILD
+    if (WindowShouldClose() || (IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false) && !firstTimeGameStart)
     {
         exitWindowRequested = true;
         isInExitMenu = true;
         return;
     }
+#endif
 
     if (firstTimeGameStart)
     {
@@ -394,6 +406,7 @@ void Game::UpdateUI()
     {
         if (IsKeyPressed(KEY_ENTER))
         {
+            gameOver = false;
             Reset();
         }
         return;
@@ -441,7 +454,11 @@ void Game::UpdateUI()
         lostWindowFocus = false;
     }
 
+#ifndef EMSCRIPTEN_BUILD
     if (exitWindowRequested == false && lostWindowFocus == false && gameOver == false && isFirstFrameAfterReset == false && IsKeyPressed(KEY_P))
+#else
+    if (exitWindowRequested == false && lostWindowFocus == false && gameOver == false && isFirstFrameAfterReset == false && (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE)))
+#endif
     {
         if (paused)
         {

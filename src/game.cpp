@@ -21,7 +21,15 @@ bool EventTriggered(float interval)
 Game::Game()
 {
     firstTimeGameStart = true;
+    isFirstFrameAfterReset = false;
+    isInExitMenu = false;
+    paused = false;
+    lostWindowFocus = false;
+    gameOver = false;
+}
 
+void Game::InitializeResources()
+{
     targetRenderTex = LoadRenderTexture(gameScreenWidth, gameScreenHeight);
     SetTextureFilter(targetRenderTex.texture, TEXTURE_FILTER_BILINEAR); // Texture scale filter to use
 
@@ -52,12 +60,6 @@ void Game::InitGame()
     lastInputTime = inputDelay;
     lastRotateInputTime = rotateInputDelay;
     lastSoftDropTimeTick = softDropInputDelay;
-
-    isFirstFrameAfterReset = true;
-    isInExitMenu = false;
-    paused = false;
-    lostWindowFocus = false;
-    gameOver = false;
 
     screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 }

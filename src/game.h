@@ -10,6 +10,7 @@ public:
     Game();
     ~Game();
     void InitGame();
+    void InitializeResources();
     void Reset();
 
     Game(const Game &) = delete;
@@ -28,7 +29,6 @@ public:
     void CheckForHighScore();
     void SaveHighScoreToFile();
     int LoadHighScoreFromFile();
-
 
     std::string FormatWithLeadingZeroes(int number, int width);
 

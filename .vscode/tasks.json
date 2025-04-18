@@ -4,85 +4,49 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build debug",
-            "type": "process",
-            "command": "make",
+            "label": "CMake Configure",
+            "type": "shell",
+            "command": "cmake",
             "args": [
-                "PLATFORM=PLATFORM_DESKTOP",
-                "BUILD_MODE=DEBUG"
+                "-B",
+                "${workspaceFolder}/build",
+                "-S",
+                "${workspaceFolder}",
+                "-DCMAKE_BUILD_TYPE=Debug"
             ],
-            "windows": {
-                "command": "C:/raylib/w64devkit/bin/mingw32-make.exe",
-                "args": [
-                    "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=game",
-                    "OBJS=*.cpp",
-                    "BUILD_MODE=DEBUG"
-                ]
-            },
-            "osx": {
-                "args": [
-                    "PROJECT_NAME=game",
-                    "OBJS=*.cpp",
-                    "BUILD_MODE=DEBUG"
-                ]
-            },
-            "linux": {
-                "args": [
-                    "PROJECT_NAME=game",
-                    "DESTDIR=/home/linuxbrew/.linuxbrew",
-                    "RAYLIB_LIBTYPE=SHARED",
-                    "EXAMPLE_RUNTIME_PATH=/home/linuxbrew/.linuxbrew/lib",
-                    "OBJS=*.cpp",
-                    "BUILD_MODE=DEBUG"
-                ]
-            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "CMake Build Debug",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build",
+                "--config",
+                "Debug"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-                "$gcc"
-            ]
+            "dependsOn": ["CMake Configure"],
+            "problemMatcher": ["$gcc"]
         },
         {
-            "label": "build release",
-            "type": "process",
-            "command": "make",
+            "label": "CMake Build Release",
+            "type": "shell",
+            "command": "cmake",
             "args": [
-                "PLATFORM=PLATFORM_DESKTOP"
+                "--build",
+                "${workspaceFolder}/build",
+                "--config",
+                "Release"
             ],
-            "windows": {
-                "command": "C:/raylib/w64devkit/bin/mingw32-make.exe",
-                "args": [
-                    "RAYLIB_PATH=C:/raylib/raylib",
-                    "PROJECT_NAME=game",
-                    "OBJS=*.cpp"
-                ]
-            },
-            "osx": {
-                "args": [
-                    "PROJECT_NAME=game",
-                    "OBJS=*.cpp"
-                ]
-            },
-            "linux": {
-                "args": [
-                    "PROJECT_NAME=game",
-                    "DESTDIR=/home/linuxbrew/.linuxbrew",
-                    "RAYLIB_LIBTYPE=SHARED",
-                    "EXAMPLE_RUNTIME_PATH=/home/linuxbrew/.linuxbrew/lib",
-                    "OBJS=*.cpp"
-                ]
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "detail": "compiler: C:\\raylib\\mingw\\bin\\g++.exe"
+            "group": "build",
+            "dependsOn": ["CMake Configure"],
+            "problemMatcher": ["$gcc"]
         }
     ]
 }

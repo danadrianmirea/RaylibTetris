@@ -174,7 +174,7 @@ void Game::DrawScreenSpaceUI()
     else if (firstTimeGameStart)
     {
         DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Press SPACE to play", GetScreenWidth() / 2 - 200, GetScreenHeight() / 2, 40, yellow);
+        DrawText("Press ENTER to play", GetScreenWidth() / 2 - 200, GetScreenHeight() / 2, 40, yellow);
     }
     else if (paused)
     {
@@ -189,7 +189,7 @@ void Game::DrawScreenSpaceUI()
     else if (gameOver)
     {
         DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Game over, press SPACE to play again", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+        DrawText("Game over, press ENTER to play again", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
     }
 }
 
@@ -252,7 +252,7 @@ void Game::HandleInput()
     if (gameOver)
     {
         int keyPress = GetKeyPressed();
-        if (keyPress == KEY_SPACE)
+        if (keyPress == KEY_ENTER)
         {
             InitGame();
         }
@@ -350,11 +350,11 @@ void Game::UpdateUI()
     }
 #endif
 
-    if (firstTimeGameStart && IsKeyPressed(KEY_SPACE))
+    if (firstTimeGameStart && IsKeyPressed(KEY_ENTER))
     {
         firstTimeGameStart = false;
     }
-    else if (gameOver && IsKeyPressed(KEY_SPACE))
+    else if (gameOver && IsKeyPressed(KEY_ENTER))
     {
         Reset();
     }

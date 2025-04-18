@@ -1,3 +1,14 @@
+build/
+web-build/
+*.idx
 *.exe
 *.dsym
 main
+*.zip
+*.tar
+*.tar.gz
+*.tar.xz
+*.tar.bz2
+*.tar.7z
+*.tar.wim
+*.tar.iso

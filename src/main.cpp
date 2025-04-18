@@ -2,7 +2,7 @@
 #include "globals.h"
 #include "game.h"
 
-#ifdef __EMSCRIPTEN__
+#ifdef EMSCRIPTEN_BUILD
 #include <emscripten.h>
 #endif
 
@@ -28,10 +28,10 @@ int main()
     ToggleBorderlessWindowed();
     SetTargetFPS(144);
 
-#ifdef __EMSCRIPTEN__
+#ifdef EMSCRIPTEN_BUILD
     emscripten_set_main_loop(MainLoop, 0, 1);
 #else
-    while (!exitWindow)
+    while (!WindowShouldClose())
     {
         MainLoop();
     }

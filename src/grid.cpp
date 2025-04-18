@@ -56,14 +56,17 @@ bool Grid::IsCellOutside(int row, int column)
     return true;
 }
 
+bool Grid::IsValidPosition(int row, int col) const
+{
+    return row >= 0 && row < numRows && col >= 0 && col < numCols;
+}
+
 bool Grid::IsCellEmpty(int row, int column)
 {
-
-    if (grid[row][column] == 0)
-    {
-        return true;
+    if (!IsValidPosition(row, column)) {
+        return true; // Consider out-of-bounds cells as empty
     }
-    return false;
+    return grid[row][column] == 0;
 }
 
 int Grid::ClearFullRows()
@@ -116,11 +119,15 @@ void Grid::ClearRow(int row)
     }
 }
 
-void Grid::MoveRowDown(int row, int numRows)
+void Grid::MoveRowDown(int row, int numRowsToMove)
 {
+    if (!IsValidPosition(row, 0) || !IsValidPosition(row + numRowsToMove, 0)) {
+        return; // Don't move if source or destination is out of bounds
+    }
+    
     for (int column = 0; column < numCols; column++)
     {
-        grid[row + numRows][column] = grid[row][column];
+        grid[row + numRowsToMove][column] = grid[row][column];
         grid[row][column] = 0;
     }
 }

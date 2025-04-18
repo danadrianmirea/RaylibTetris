@@ -15,7 +15,7 @@ emcc src/*.cpp -o web-build/index.html \
   -s STACK_SIZE=2097152 \
   --preload-file Font@/Font \
   --preload-file Sounds@/Sounds \
-  --shell-file custom_shell.html
+  --shell-file minshell.html
 
 # Check if the emcc build was successful
 if [ $? -eq 0 ]; then

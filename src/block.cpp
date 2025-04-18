@@ -28,6 +28,10 @@ void Block::Move(int rows, int columns)
 
 std::vector<Position> Block::GetCellPositions()
 {
+    if (cells.find(rotationState) == cells.end()) {
+        return std::vector<Position>(); // Return empty vector if rotation state doesn't exist
+    }
+    
     std::vector<Position> tiles = cells[rotationState];
     std::vector<Position> movedTiles;
     for(Position item : tiles)
@@ -40,6 +44,8 @@ std::vector<Position> Block::GetCellPositions()
 
 void Block::Rotate()
 {
+    if (cells.empty()) return;
+    
     rotationState++;
     if(rotationState == (int)cells.size())
     {
@@ -49,9 +55,11 @@ void Block::Rotate()
 
 void Block::UndoRotation()
 {
+    if (cells.empty()) return;
+    
     rotationState--;
     if(rotationState == -1)
     {
-        rotationState = cells.size() -1;
+        rotationState = cells.size() - 1;
     }
 }

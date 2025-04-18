@@ -26,6 +26,7 @@ class Grid
         bool IsRowFull(int row);
         void ClearRow(int row);
         void MoveRowDown(int row, int numRows);
+        bool IsValidPosition(int row, int col) const;
         int numRows;
         int numCols;
         int cellSize;

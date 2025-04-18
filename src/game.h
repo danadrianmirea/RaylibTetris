@@ -12,6 +12,7 @@ public:
     void InitGame();
     void InitializeResources();
     void Reset();
+    void StartAudio();
 
     Game(const Game &) = delete;
     const Game &operator=(const Game &g) = delete;

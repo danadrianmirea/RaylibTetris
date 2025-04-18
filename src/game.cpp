@@ -30,26 +30,33 @@ Game::Game()
 
 void Game::InitializeResources()
 {
+    // Initialize other resources
     targetRenderTex = LoadRenderTexture(gameScreenWidth, gameScreenHeight);
     SetTextureFilter(targetRenderTex.texture, TEXTURE_FILTER_BILINEAR); // Texture scale filter to use
 
     grid = Grid();
     font = LoadFontEx("Font/monogram.ttf", 64, 0, 0);
+
+    // Load audio resources after device is initialized
     music = LoadMusicStream("Sounds/music.mp3");
     SetMusicVolume(music, 0.3f);
-    PlayMusicStream(music);
-
     manipulateSound = LoadSound("Sounds/rotate.mp3");
     clearSound = LoadSound("Sounds/clear.mp3");
 
-    InitGame();
+    // InitGame() is now called only when user presses ENTER
+}
+
+void Game::StartAudio()
+{
+    // Only handle playing the music, since device is already initialized
+    PlayMusicStream(music);
 }
 
 void Game::InitGame()
 {
     grid.Initialize();
     blocks = GetAllBlocks();
-    currentBlock = GetRandomBlock();
+    currentBlock = GetRandomBlock();  // Initialize currentBlock
     nextBlock = GetRandomBlock();
     score = 0;
     highScore = LoadHighScoreFromFile();
@@ -61,7 +68,11 @@ void Game::InitGame()
     lastRotateInputTime = rotateInputDelay;
     lastSoftDropTimeTick = softDropInputDelay;
 
+#ifndef EMSCRIPTEN_BUILD
     screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
+#else
+    screenScale = WEB_SCREEN_SCALE;
+#endif
 }
 
 void Game::Reset()
@@ -84,6 +95,12 @@ Block Game::GetRandomBlock()
     {
         blocks = GetAllBlocks();
     }
+    
+    if (blocks.empty()) {
+        // Return a default block if somehow we have no blocks
+        return Block();
+    }
+    
     int randomIndex = rand() % blocks.size();
     Block block = blocks[randomIndex];
     blocks.erase(blocks.begin() + randomIndex);
@@ -97,15 +114,42 @@ std::vector<Block> Game::GetAllBlocks()
 
 void Game::Update()
 {
-    screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
+#ifndef EMSCRIPTEN_BUILD
+    screenScale = MIN((float)GetScreenWidthWrapper() / gameScreenWidth, (float)GetScreenHeightWrapper() / gameScreenHeight);
+#endif
+
     UpdateUI();
     UpdateMusicStream(music);
 
+    if (firstTimeGameStart)
+    {
+        std::cout << "Waiting for ENTER key press... firstTimeGameStart=" << firstTimeGameStart << std::endl;
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            std::cout << "ENTER key pressed, starting game..." << std::endl;
+            firstTimeGameStart = false;
+            StartAudio();  // Start audio on first user interaction
+            InitGame();    // Initialize game state when starting
+        }
+        return;
+    }
+
+    if (gameOver)
+    {
+        if (IsKeyPressed(KEY_ENTER))
+        {
+            Reset();
+            StartAudio();  // Restart audio when game is reset
+        }
+        return;
+    }
+
     bool running = (firstTimeGameStart == false && paused == false && lostWindowFocus == false && isInExitMenu == false && gameOver == false);
 
+    
     if (running)
     {
-        HandleInput();
+        HandleInput();        
         
         if (EventTriggered(0.9f / currentLevel))
         {
@@ -138,7 +182,7 @@ void Game::Draw()
     BeginDrawing();
     ClearBackground(BLACK);
     DrawTexturePro(targetRenderTex.texture, (Rectangle){0.0f, 0.0f, (float)targetRenderTex.texture.width, (float)-targetRenderTex.texture.height},
-                   (Rectangle){(GetScreenWidth() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeight() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
+                   (Rectangle){(GetScreenWidthWrapper() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeightWrapper() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
                    (Vector2){0, 0}, 0.0f, WHITE);
 
     DrawScreenSpaceUI();
@@ -170,28 +214,28 @@ void Game::DrawScreenSpaceUI()
 {
     if (exitWindowRequested)
     {
-        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Are you sure you want to exit? [Y/N]", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+        DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 500), (float)(GetScreenHeightWrapper() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Are you sure you want to exit? [Y/N]", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2, 40, yellow);
     }
     else if (firstTimeGameStart)
     {
-        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Press ENTER to play", GetScreenWidth() / 2 - 200, GetScreenHeight() / 2, 40, yellow);
+        DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 500), (float)(GetScreenHeightWrapper() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Press ENTER to play", GetScreenWidthWrapper() / 2 - 200, GetScreenHeightWrapper() / 2, 40, yellow);
     }
     else if (paused)
     {
-        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Game paused, press P to continue", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+        DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 500), (float)(GetScreenHeightWrapper() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Game paused, press P to continue", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2, 40, yellow);
     }
     else if (lostWindowFocus)
     {
-        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Game paused, focus window to continue", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+        DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 500), (float)(GetScreenHeightWrapper() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Game paused, focus window to continue", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2, 40, yellow);
     }
     else if (gameOver)
     {
-        DrawRectangleRounded({(float)(GetScreenWidth() / 2 - 500), (float)(GetScreenHeight() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
-        DrawText("Game over, press ENTER to play again", GetScreenWidth() / 2 - 400, GetScreenHeight() / 2, 40, yellow);
+        DrawRectangleRounded({(float)(GetScreenWidthWrapper() / 2 - 500), (float)(GetScreenHeightWrapper() / 2 - 40), 1000, 120}, 0.76f, 20, BLACK);
+        DrawText("Game over, press ENTER to play again", GetScreenWidthWrapper() / 2 - 400, GetScreenHeightWrapper() / 2, 40, yellow);
     }
 }
 
@@ -246,6 +290,7 @@ std::string Game::FormatWithLeadingZeroes(int number, int width)
 
 void Game::HandleInput()
 {
+
     if (isFirstFrameAfterReset)
     {
         isFirstFrameAfterReset = false;
@@ -338,6 +383,7 @@ void Game::UpdateUI()
     }
 
 #ifdef AM_RAY_DEBUG
+#ifndef EMSCRIPTEN_BUILD
     if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
     {
         if (fullscreen)
@@ -353,15 +399,7 @@ void Game::UpdateUI()
         }
     }
 #endif
-
-    if (firstTimeGameStart && IsKeyPressed(KEY_ENTER))
-    {
-        firstTimeGameStart = false;
-    }
-    else if (gameOver && IsKeyPressed(KEY_ENTER))
-    {
-        Reset();
-    }
+#endif
 
     if (exitWindowRequested)
     {

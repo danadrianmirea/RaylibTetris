@@ -46,8 +46,11 @@ int main()
     
     SetMasterVolume(0.22f);
     SetExitKey(KEY_NULL);
-
+    
+#ifndef EMSCRIPTEN_BUILD
     ToggleBorderlessWindowed();
+#endif
+
     SetTargetFPS(144);
 
     std::cout << "Creating game instance..." << std::endl;

@@ -12,6 +12,7 @@ emcc src/*.cpp -o web-build/index.html \
   -s EXPORTED_FUNCTIONS="['_main']" \
   -s EXPORTED_RUNTIME_METHODS="['ccall', 'cwrap']" \
   -s ALLOW_MEMORY_GROWTH=1 \
+  -s STACK_SIZE=2097152 \
   --preload-file Font@/Font \
   --preload-file Sounds@/Sounds \
   --shell-file custom_shell.html

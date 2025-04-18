@@ -229,7 +229,9 @@ int Game::LoadHighScoreFromFile()
     }
     else
     {
+#ifndef EMSCRIPTEN_BUILD
         std::cerr << "Failed to load highscore from file\n";
+#endif
     }
     return loadedHighScore;
 }

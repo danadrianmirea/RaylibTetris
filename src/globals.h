@@ -33,3 +33,6 @@ extern const Color lightBlue;
 extern const Color darkBlue;
 
 extern std::vector<Color> GetCellColors();
+
+int GetScreenWidthWrapper();
+int GetScreenHeightWrapper();

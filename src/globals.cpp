@@ -10,7 +10,11 @@ const int gameScreenHeight = 620;
 
 bool exitWindowRequested = false;
 bool exitWindow = false;
+#ifdef EMSCRIPTEN_BUILD
+bool fullscreen = false;
+#else
 bool fullscreen = true;
+#endif
 const int minimizeOffset = 50;
 float borderOffsetWidth = 20.0;
 float borderOffsetHeight = 50.0f;
@@ -29,4 +33,22 @@ const Color darkBlue = {44, 44, 127, 255};
 std::vector<Color> GetCellColors()
 {
     return {darkGrey, green, red, orange, yellow, purple, cyan, blue};
+}
+
+int GetScreenWidthWrapper()
+{
+#ifdef EMSCRIPTEN_BUILD
+    return 960;
+#else
+    return GetScreenWidth();
+#endif
+}
+
+int GetScreenHeightWrapper()
+{
+#ifdef EMSCRIPTEN_BUILD
+    return 540;
+#else
+    return GetScreenHeight();
+#endif
 }

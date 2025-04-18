@@ -62,5 +62,7 @@
 	"cmake.installPrefix": "${workspaceFolder}/build/install",
 	"cmake.configureSettings": {
 		"CMAKE_BUILD_TYPE": "Debug"
-	}
+	},
+	"cmake.launchTarget": "RaylibTetris",
+	"cmake.defaultLaunchTarget": "RaylibTetris"
 }

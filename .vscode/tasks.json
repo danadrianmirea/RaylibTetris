@@ -12,10 +12,17 @@
                 "${workspaceFolder}/build",
                 "-S",
                 "${workspaceFolder}",
-                "-DCMAKE_BUILD_TYPE=Debug"
+                "-DCMAKE_BUILD_TYPE=Debug",
+                "-G",
+                "MinGW Makefiles",
+                "--log-level=VERBOSE"
             ],
             "group": "build",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
         },
         {
             "label": "CMake Build Debug",
@@ -25,14 +32,21 @@
                 "--build",
                 "${workspaceFolder}/build",
                 "--config",
-                "Debug"
+                "Debug",
+                "--",
+                "-j4",
+                "--verbose"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "dependsOn": ["CMake Configure"],
-            "problemMatcher": ["$gcc"]
+            "problemMatcher": ["$gcc"],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
         },
         {
             "label": "CMake Build Release",
@@ -42,11 +56,18 @@
                 "--build",
                 "${workspaceFolder}/build",
                 "--config",
-                "Release"
+                "Release",
+                "--",
+                "-j4",
+                "--verbose"
             ],
             "group": "build",
             "dependsOn": ["CMake Configure"],
-            "problemMatcher": ["$gcc"]
+            "problemMatcher": ["$gcc"],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
         }
     ]
 }

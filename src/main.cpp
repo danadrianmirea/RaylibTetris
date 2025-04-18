@@ -7,12 +7,15 @@
 #include <emscripten.h>
 #endif
 
+Game* game;
+
 using namespace std;
 
-void MainLoop(Game* game)
+void MainLoop(void* arg)
 {
-    game->Update();
-    game->Draw();
+    Game* gamePtr = static_cast<Game*>(arg);
+    gamePtr->Update();
+    gamePtr->Draw();
 }
 
 int main()
@@ -21,13 +24,16 @@ int main()
     
     std::cout << "Initializing window..." << std::endl;
     InitWindow(gameScreenWidth, gameScreenHeight, "Tetris");
+
     if (!IsWindowReady()) {
         std::cerr << "Failed to initialize window!" << std::endl;
         return 1;
     }
     std::cout << "Window initialized successfully" << std::endl;
-    
+
+#ifndef EMSCRIPTEN_BUILD
     SetWindowPosition(50, 50);
+#endif
 
     std::cout << "Initializing audio..." << std::endl;
     InitAudioDevice();
@@ -45,11 +51,11 @@ int main()
     SetTargetFPS(144);
 
     std::cout << "Creating game instance..." << std::endl;
-    Game game;
+    game = new Game();
     std::cout << "Game instance created successfully" << std::endl;
 
     std::cout << "Initializing game resources..." << std::endl;
-    game.InitializeResources();
+    game->InitializeResources();
     std::cout << "Game resources initialized successfully" << std::endl;
 
     std::cout << "Entering main loop..." << std::endl;
@@ -58,7 +64,7 @@ int main()
 #else
     while (!WindowShouldClose() && !exitWindow)
     {
-        MainLoop(&game);
+        MainLoop(game);
     }
     std::cout << "Exiting main loop..." << std::endl;
 
@@ -66,6 +72,7 @@ int main()
     CloseWindow();
 #endif
 
+    delete game;
     std::cout << "Application exiting normally" << std::endl;
     return 0;
 }

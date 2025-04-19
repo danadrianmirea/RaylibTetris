@@ -254,7 +254,11 @@ void Game::DrawScreenSpaceUI()
     else if (paused)
     {
         DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250 * uiScale), yOffset + (scaledHeight / 2 - 20 * uiScale), 500 * uiScale, 60 * uiScale}, 0.76f, 20 * uiScale, BLACK);
+#ifdef EMSCRIPTEN_BUILD
         DrawText("Game paused, press P to continue", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 20 * uiScale, yellow);
+#else
+        DrawText("Game paused, press P or ESC to continue", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 20 * uiScale, yellow);
+#endif
     }
     else if (lostWindowFocus)
     {

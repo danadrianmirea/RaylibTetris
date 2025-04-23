@@ -21,15 +21,27 @@ A classic Tetris game implementation using the Raylib game development library.
 
 ## Requirements
 
-- C++ compiler (GCC/Clang)
+- C++ compiler (GCC/Clang/MSVC)
+- CMake (version 3.10 or higher)
 - Raylib library
-- Make (for building)
 
 ## Building the Game
 
 1. Make sure you have Raylib installed on your system
-2. Run `make` in the project directory
-3. The executable `game.exe` will be created
+2. Create a build directory and navigate to it:
+   ```bash
+   mkdir build
+   cd build
+   ```
+3. Configure the project with CMake:
+   ```bash
+   cmake ..
+   ```
+4. Build the project:
+   ```bash
+   cmake --build .
+   ```
+5. The executable `RaylibTetris.exe` will be created in the build directory
 
 ## Project Structure
 

@@ -58,3 +58,5 @@ A classic Tetris game implementation using the Raylib game development library.
 ## License
 
 This project is licensed under the terms specified in the LICENSE.txt file.
+
+Big thanks to https://github.com/educ8s (https://www.youtube.com/@programmingwithnick) for making great Raylib tutorials on youtube.

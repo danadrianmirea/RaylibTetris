@@ -40,6 +40,7 @@
         body { 
           margin: 0px; 
           overflow: hidden; 
+          text-align: center;
           background-color: black;
         }
         canvas.emscripten { border: 0px none; background-color: black;}
@@ -129,8 +130,8 @@
 
 		  canvas {
 			display: block;
-			max-width: 100%;
-			max-height: 100%;
+			width: 100%;
+			height: 100%;
 		  }
 		</style>
 				
@@ -151,12 +152,11 @@
                 })(),
                 canvas: (function() {
                     var canvas = document.getElementById('canvas');
-                    
-                    // Force resize after 300ms to fix Emscripten web build issues
-                    setTimeout(function() {
-                        window.dispatchEvent(new Event('resize'));
-                    }, 300);
-                    
+                    canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+                    canvas.style.touchAction = 'none';
+                    canvas.style.webkitTouchCallout = 'none';
+                    canvas.style.webkitUserSelect = 'none';5
+                    canvas.style.userSelect = 'none';
                     return canvas;
                 })()
             };

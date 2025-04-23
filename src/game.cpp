@@ -99,7 +99,7 @@ void Game::InitGame()
     lastRotateInputTime = rotateInputDelay;
     lastSoftDropTimeTick = softDropInputDelay;
 
-    screenScale = MIN((float)GetScreenWidthWrapper() / gameScreenWidth, (float)GetScreenHeightWrapper() / gameScreenHeight);
+    screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 }
 
 void Game::Reset()
@@ -150,7 +150,7 @@ std::vector<Block> Game::GetAllBlocks()
 
 void Game::Update()
 {
-    screenScale = MIN((float)GetScreenWidthWrapper() / gameScreenWidth, (float)GetScreenHeightWrapper() / gameScreenHeight);
+    screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
     UpdateUI();
     
     if (audioInitialized) {
@@ -185,15 +185,16 @@ void Game::Draw()
     grid.Draw();      
     currentBlock.Draw(0, 0);       
     DrawUI();     
+    DrawScreenSpaceUI(); 
     EndTextureMode();
     // render the scaled frame texture to the screen
     BeginDrawing();     
     ClearBackground(BLACK);     
     DrawTexturePro(targetRenderTex.texture, (Rectangle){0.0f, 0.0f, (float)targetRenderTex.texture.width, (float)-targetRenderTex.texture.height},
-                   (Rectangle){(GetScreenWidthWrapper() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeightWrapper() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
+                   (Rectangle){(GetScreenWidth() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeight() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
                    (Vector2){0, 0}, 0.0f, WHITE);
 
-    DrawScreenSpaceUI(); 
+    
     EndDrawing();
 }
 
@@ -225,50 +226,45 @@ void Game::DrawUI()
 
 void Game::DrawScreenSpaceUI()
 {
-#ifdef EMSCRIPTEN_BUILD
-    float uiScale = 1.0f;
-#else
-    float uiScale = 2.0f;
-#endif
-    float scaledWidth = (float)gameScreenWidth * screenScale;
-    float scaledHeight = (float)gameScreenHeight * screenScale;
-    float xOffset = (GetScreenWidthWrapper() - scaledWidth) * 0.5f;
-    float yOffset = (GetScreenHeightWrapper() - scaledHeight) * 0.5f;
+    float scaledWidth = (float)gameScreenWidth;
+    float scaledHeight = (float)gameScreenHeight;
+    float xOffset = (gameScreenWidth - scaledWidth) * 0.5f;
+    float yOffset = (gameScreenHeight - scaledHeight) * 0.5f;
 
     if (exitWindowRequested)
     {
-        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250 * uiScale), yOffset + (scaledHeight / 2 - 20 * uiScale), 500 * uiScale, 60 * uiScale}, 0.76f, 20 * uiScale, BLACK);
-        DrawText("Are you sure you want to exit? [Y/N]", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 20 * uiScale, yellow);
+        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250), yOffset + (scaledHeight / 2 - 20), 500, 60}, 0.76f, 20, BLACK);
+        DrawText("Are you sure you want to exit? [Y/N]", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
     }
     else if (firstTimeGameStart)
     {
-        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 215 * uiScale), yOffset + (scaledHeight / 2 - 135 * uiScale), 430 * uiScale, 205 * uiScale}, 0.76f, 20 * uiScale, BLACK);
-        DrawText("RAYLIB TETRIS", xOffset + (scaledWidth / 2 - 100 * uiScale), yOffset + (scaledHeight / 2 - 125 * uiScale), 25 * uiScale, yellow);
-        DrawText("Controls:", xOffset + (scaledWidth / 2 - 100 * uiScale), yOffset + (scaledHeight / 2 - 90 * uiScale), 20 * uiScale, yellow);
-        DrawText("Left/Right Arrow or A/D: Move", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2 - 60 * uiScale), 15 * uiScale, WHITE);
-        DrawText("Up Arrow or W: Rotate", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2 - 40 * uiScale), 15 * uiScale, WHITE);
-        DrawText("Down Arrow or S: Soft Drop", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2 - 20 * uiScale), 15 * uiScale, WHITE);
-        DrawText("P: Pause", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 15 * uiScale, WHITE);
-        DrawText("Press ENTER to play", xOffset + (scaledWidth / 2 - 100 * uiScale), yOffset + (scaledHeight / 2 + 30 * uiScale), 20 * uiScale, yellow);
+        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 215), yOffset + (scaledHeight / 2 - 135), 430, 205}, 0.76f, 20, BLACK);
+        DrawText("RAYLIB TETRIS", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 125), 25, yellow);
+        DrawText("Controls:", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 90), 20, yellow);
+        DrawText("Left/Right Arrow or A/D: Move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
+        DrawText("Up Arrow or W: Rotate", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
+        DrawText("Down Arrow or S: Soft Drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
+        DrawText("P: Pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
+        DrawText("Press ENTER to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 30), 20, yellow);
     }
     else if (paused)
     {
-        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250 * uiScale), yOffset + (scaledHeight / 2 - 20 * uiScale), 500 * uiScale, 60 * uiScale}, 0.76f, 20 * uiScale, BLACK);
+        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250), yOffset + (scaledHeight / 2 - 20), 500, 60}, 0.76f, 20, BLACK);
 #ifndef EMSCRIPTEN_BUILD
-        DrawText("Game paused, press P to continue", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 20 * uiScale, yellow);
+        DrawText("Game paused, press P to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
 #else
-        DrawText("Game paused, press P or ESC to continue", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 20 * uiScale, yellow);
+        DrawText("Game paused, press P or ESC to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
 #endif
     }
     else if (lostWindowFocus)
     {
-        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250 * uiScale), yOffset + (scaledHeight / 2 - 20 * uiScale), 500 * uiScale, 60 * uiScale}, 0.76f, 20 * uiScale, BLACK);
-        DrawText("Game paused, focus window to continue", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 20 * uiScale, yellow);
+        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250), yOffset + (scaledHeight / 2 - 20), 500, 60}, 0.76f, 20, BLACK);
+        DrawText("Game paused, focus window to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
     }
     else if (gameOver)
     {
-        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250 * uiScale), yOffset + (scaledHeight / 2 - 20 * uiScale), 500 * uiScale, 60 * uiScale}, 0.76f, 20 * uiScale, BLACK);
-        DrawText("Game over, press ENTER to play again", xOffset + (scaledWidth / 2 - 200 * uiScale), yOffset + (scaledHeight / 2), 20 * uiScale, yellow);
+        DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250), yOffset + (scaledHeight / 2 - 20), 500, 60}, 0.76f, 20, BLACK);
+        DrawText("Game over, press ENTER to play again", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
     }
 }
 
@@ -395,7 +391,7 @@ void Game::HandleInput()
 void Game::UpdateUI()
 {
 #ifndef EMSCRIPTEN_BUILD
-    if (WindowShouldClose() || (IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false) && !firstTimeGameStart)
+    if (WindowShouldClose() || ((IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false) && !firstTimeGameStart))
     {
         exitWindowRequested = true;
         isInExitMenu = true;

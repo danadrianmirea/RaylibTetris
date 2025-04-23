@@ -20,11 +20,7 @@ void MainLoop(void* arg)
 
 int main()
 {
-#ifndef EMSCRIPTEN_BUILD
     InitWindow(gameScreenWidth, gameScreenHeight, "Tetris");
-#else
-    InitWindow(WEB_WIDTH, WEB_HEIGHT, "Tetris");
-#endif
 
     if (!IsWindowReady()) {
         return 1;

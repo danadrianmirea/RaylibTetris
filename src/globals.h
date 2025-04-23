@@ -5,10 +5,6 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-#define WEB_WIDTH 960
-#define WEB_HEIGHT 540
-#define WEB_SCREEN_SCALE 0.9f
-
 //#define AM_RAY_DEBUG
 
 extern Color darkGreen;
@@ -37,6 +33,3 @@ extern const Color lightBlue;
 extern const Color darkBlue;
 
 extern std::vector<Color> GetCellColors();
-
-int GetScreenWidthWrapper();
-int GetScreenHeightWrapper();

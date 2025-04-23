@@ -34,21 +34,3 @@ std::vector<Color> GetCellColors()
 {
     return {darkGrey, green, red, orange, yellow, purple, cyan, blue};
 }
-
-int GetScreenWidthWrapper()
-{
-#ifdef EMSCRIPTEN_BUILD
-    return 960;
-#else
-    return GetScreenWidth();
-#endif
-}
-
-int GetScreenHeightWrapper()
-{
-#ifdef EMSCRIPTEN_BUILD
-    return 540;
-#else
-    return GetScreenHeight();
-#endif
-}

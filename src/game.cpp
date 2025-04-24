@@ -27,6 +27,15 @@ Game::Game()
     paused = false;
     lostWindowFocus = false;
     gameOver = false;
+    
+    // Check if running on a mobile device
+    #ifdef __EMSCRIPTEN__
+    isMobile = EM_ASM_INT({
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    });
+    #else
+    isMobile = false;
+    #endif
 }
 
 void Game::InitializeResources()

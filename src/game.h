@@ -3,6 +3,9 @@
 #include "globals.h"
 #include "grid.h"
 #include "blocks.h"
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 class Game
 {
@@ -40,6 +43,7 @@ public:
     bool lostWindowFocus;
     bool gameOver;
     bool audioInitialized;
+    bool isMobile;
 
 private:
     Block GetRandomBlock();

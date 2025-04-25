@@ -36,6 +36,8 @@ Game::Game()
     #else
     isMobile = false;
     #endif
+
+    InitGame();
 }
 
 void Game::InitializeResources()
@@ -194,7 +196,6 @@ void Game::Draw()
     grid.Draw();      
     currentBlock.Draw(0, 0);       
     DrawUI();     
-    DrawScreenSpaceUI(); 
     EndTextureMode();
     // render the scaled frame texture to the screen
     BeginDrawing();     
@@ -411,7 +412,6 @@ void Game::UpdateUI()
         {
             firstTimeGameStart = false;
             // Initialize game state first
-            InitGame();
             StartAudio();
         }
         return;

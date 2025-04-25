@@ -231,7 +231,7 @@ void Game::DrawUI()
     DrawTextEx(font, "Next", {365, 275}, fontSize, 2, WHITE);
     nextBlock.Draw(260, 340);
 
-    DrawTextEx(font, TextFormat("Level: %d", currentLevel), {325, 540}, fontSize, 2, WHITE);
+    DrawTextEx(font, TextFormat("Level: %d", currentLevel), {350, 460}, fontSize, 2, WHITE);
 
    float scaledWidth = (float)gameScreenWidth;
     float scaledHeight = (float)gameScreenHeight;

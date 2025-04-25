@@ -28,7 +28,6 @@ public:
 
     void Draw();
     void DrawUI();
-    void DrawScreenSpaceUI();
 
     void CheckForHighScore();
     void SaveHighScoreToFile();

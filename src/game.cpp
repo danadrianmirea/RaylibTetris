@@ -230,12 +230,9 @@ void Game::DrawUI()
     DrawTextEx(font, "Next", {365, 275}, fontSize, 2, WHITE);
     nextBlock.Draw(260, 340);
 
-    DrawTextEx(font, TextFormat("Level: %d", currentLevel), {345, 540}, fontSize, 2, WHITE);
-}
+    DrawTextEx(font, TextFormat("Level: %d", currentLevel), {325, 540}, fontSize, 2, WHITE);
 
-void Game::DrawScreenSpaceUI()
-{
-    float scaledWidth = (float)gameScreenWidth;
+   float scaledWidth = (float)gameScreenWidth;
     float scaledHeight = (float)gameScreenHeight;
     float xOffset = (gameScreenWidth - scaledWidth) * 0.5f;
     float yOffset = (gameScreenHeight - scaledHeight) * 0.5f;
@@ -274,7 +271,7 @@ void Game::DrawScreenSpaceUI()
     {
         DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250), yOffset + (scaledHeight / 2 - 20), 500, 60}, 0.76f, 20, BLACK);
         DrawText("Game over, press ENTER to play again", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
-    }
+    }    
 }
 
 void Game::CheckForHighScore()

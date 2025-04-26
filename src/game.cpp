@@ -27,6 +27,13 @@ Game::Game()
     paused = false;
     lostWindowFocus = false;
     gameOver = false;
+    exitWindowRequested = false;
+    touchCollisionScale = 3.0f;
+    buttonSize = 60.0f;
+    buttonRadius = buttonSize / 2.0f;
+    buttonPadding = 20.0f;
+    buttonColor = {200, 200, 200, 200}; // Semi-transparent white
+    arrowColor = {50, 50, 50, 255}; // Dark gray for arrows
     
     // Check if running on a mobile device
     #ifdef __EMSCRIPTEN__
@@ -115,6 +122,13 @@ void Game::InitGame()
 
 void Game::Reset()
 {
+    firstTimeGameStart = false;
+    isFirstFrameAfterReset = true;
+    isInExitMenu = false;
+    paused = false;
+    lostWindowFocus = false;
+    gameOver = false;
+    exitWindowRequested = false;
     InitGame();
 }
 
@@ -233,10 +247,58 @@ void Game::DrawUI()
 
     DrawTextEx(font, TextFormat("Level: %d", currentLevel), {350, 460}, fontSize, 2, WHITE);
 
-   float scaledWidth = (float)gameScreenWidth;
+    float scaledWidth = (float)gameScreenWidth;
     float scaledHeight = (float)gameScreenHeight;
     float xOffset = (gameScreenWidth - scaledWidth) * 0.5f;
     float yOffset = (gameScreenHeight - scaledHeight) * 0.5f;
+
+    // Draw mobile controls if on mobile device
+    if (isMobile)
+    {
+        // Up button
+        float upX = gameScreenWidth / 2.0f;
+        float upY = buttonRadius + buttonPadding;
+        DrawCircle(upX, upY, buttonRadius, buttonColor);
+        DrawTriangle(
+            {upX, upY - buttonRadius/2},
+            {upX - buttonRadius/2, upY + buttonRadius/2},
+            {upX + buttonRadius/2, upY + buttonRadius/2},
+            arrowColor
+        );
+
+        // Down button
+        float downX = gameScreenWidth / 2.0f;
+        float downY = gameScreenHeight - buttonRadius - buttonPadding;
+        DrawCircle(downX, downY, buttonRadius, buttonColor);
+        DrawTriangle(
+            {downX, downY + buttonRadius/2},
+            {downX + buttonRadius/2, downY - buttonRadius/2},
+            {downX - buttonRadius/2, downY - buttonRadius/2},
+            arrowColor
+        );
+
+        // Left button
+        float leftX = buttonRadius + buttonPadding;
+        float leftY = gameScreenHeight / 2.0f;
+        DrawCircle(leftX, leftY, buttonRadius, buttonColor);
+        DrawTriangle(
+            {leftX - buttonRadius/2, leftY},
+            {leftX + buttonRadius/2, leftY + buttonRadius/2},           
+            {leftX + buttonRadius/2, leftY - buttonRadius/2},
+            arrowColor
+        );
+
+        // Right button
+        float rightX = gameScreenWidth - buttonRadius - buttonPadding;
+        float rightY = gameScreenHeight / 2.0f;
+        DrawCircle(rightX, rightY, buttonRadius, buttonColor);
+        DrawTriangle(
+            {rightX + buttonRadius/2, rightY},
+            {rightX - buttonRadius/2, rightY - buttonRadius/2},
+            {rightX - buttonRadius/2, rightY + buttonRadius/2},
+            arrowColor
+        );
+    }
 
     if (exitWindowRequested)
     {
@@ -248,19 +310,35 @@ void Game::DrawUI()
         DrawRectangleRounded({xOffset + (scaledWidth / 2 - 215), yOffset + (scaledHeight / 2 - 135), 430, 205}, 0.76f, 20, BLACK);
         DrawText("RAYLIB TETRIS", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 125), 25, yellow);
         DrawText("Controls:", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 90), 20, yellow);
-        DrawText("Left/Right Arrow or A/D: Move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
-        DrawText("Up Arrow or W: Rotate", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
-        DrawText("Down Arrow or S: Soft Drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
-        DrawText("P: Pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
-        DrawText("Press ENTER to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 30), 20, yellow);
+        if (isMobile) {
+            DrawText("Tap left/right to move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
+            DrawText("Tap up to rotate", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
+            DrawText("Tap down to soft drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
+            DrawText("Tap center to pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
+            DrawText("Tap to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 30), 20, yellow);
+        } else {
+            DrawText("Left/Right Arrow or A/D: Move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
+            DrawText("Up Arrow or W: Rotate", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
+            DrawText("Down Arrow or S: Soft Drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
+            DrawText("P: Pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
+            DrawText("Press ENTER to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 30), 20, yellow);
+        }
     }
     else if (paused)
     {
         DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250), yOffset + (scaledHeight / 2 - 20), 500, 60}, 0.76f, 20, BLACK);
 #ifndef EMSCRIPTEN_BUILD
-        DrawText("Game paused, press P to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        if (isMobile) {
+            DrawText("Game paused, tap center to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        } else {
+            DrawText("Game paused, press P to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        }
 #else
-        DrawText("Game paused, press P or ESC to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        if (isMobile) {
+            DrawText("Game paused, tap center to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        } else {
+            DrawText("Game paused, press P or ESC to continue", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        }
 #endif
     }
     else if (lostWindowFocus)
@@ -271,7 +349,11 @@ void Game::DrawUI()
     else if (gameOver)
     {
         DrawRectangleRounded({xOffset + (scaledWidth / 2 - 250), yOffset + (scaledHeight / 2 - 20), 500, 60}, 0.76f, 20, BLACK);
-        DrawText("Game over, press ENTER to play again", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        if (isMobile) {
+            DrawText("Game over, tap to play again", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        } else {
+            DrawText("Game over, press ENTER to play again", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 20, yellow);
+        }
     }    
 }
 
@@ -341,7 +423,7 @@ void Game::HandleInput()
 
     if (lastInputTime >= inputDelay)
     {
-        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
+        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A) || (isMobile && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckTouchInLeftButton()))
         {
             goodMove = MoveBlockLeft();
             if (goodMove)
@@ -351,7 +433,7 @@ void Game::HandleInput()
             lastInputTime = 0.0f;
         }
 
-        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
+        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D) || (isMobile && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckTouchInRightButton()))
         {
             goodMove = MoveBlockRight();
             lastInputTime = 0.0f;
@@ -364,7 +446,7 @@ void Game::HandleInput()
 
     if (lastRotateInputTime >= rotateInputDelay)
     {
-        if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W))
+        if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || (isMobile && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckTouchInUpButton()))
         {
             goodMove = RotateBlock();
             lastRotateInputTime = 0.0f;
@@ -373,7 +455,7 @@ void Game::HandleInput()
 
     if (lastSoftDropTimeTick >= softDropInputDelay)
     {
-        if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S))
+        if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S) || (isMobile && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckTouchInDownButton()))
         {
             // MoveBlockDown();
             SnakeDropBlock();
@@ -395,10 +477,86 @@ void Game::HandleInput()
     }
 }
 
+bool Game::CheckTouchInUpButton()
+{
+    float upX = gameScreenWidth / 2.0f;
+    float upY = buttonRadius + buttonPadding;
+    
+    Vector2 touchPos = GetMousePosition();
+    // Scale touch position to game screen coordinates
+    touchPos.x = (touchPos.x - (GetScreenWidth() - gameScreenWidth * screenScale) * 0.5f) / screenScale;
+    touchPos.y = (touchPos.y - (GetScreenHeight() - gameScreenHeight * screenScale) * 0.5f) / screenScale;
+    
+    float dx = touchPos.x - upX;
+    float dy = touchPos.y - upY;
+    return (dx * dx + dy * dy) <= (buttonRadius * buttonRadius * touchCollisionScale * touchCollisionScale);
+}
+
+bool Game::CheckTouchInDownButton()
+{
+    float downX = gameScreenWidth / 2.0f;
+    float downY = gameScreenHeight - buttonRadius - buttonPadding;
+    
+    Vector2 touchPos = GetMousePosition();
+    // Scale touch position to game screen coordinates
+    touchPos.x = (touchPos.x - (GetScreenWidth() - gameScreenWidth * screenScale) * 0.5f) / screenScale;
+    touchPos.y = (touchPos.y - (GetScreenHeight() - gameScreenHeight * screenScale) * 0.5f) / screenScale;
+    
+    float dx = touchPos.x - downX;
+    float dy = touchPos.y - downY;
+    return (dx * dx + dy * dy) <= (buttonRadius * buttonRadius * touchCollisionScale * touchCollisionScale);
+}
+
+bool Game::CheckTouchInLeftButton()
+{
+    float leftX = buttonRadius + buttonPadding;
+    float leftY = gameScreenHeight / 2.0f;
+    
+    Vector2 touchPos = GetMousePosition();
+    // Scale touch position to game screen coordinates
+    touchPos.x = (touchPos.x - (GetScreenWidth() - gameScreenWidth * screenScale) * 0.5f) / screenScale;
+    touchPos.y = (touchPos.y - (GetScreenHeight() - gameScreenHeight * screenScale) * 0.5f) / screenScale;
+    
+    float dx = touchPos.x - leftX;
+    float dy = touchPos.y - leftY;
+    return (dx * dx + dy * dy) <= (buttonRadius * buttonRadius * touchCollisionScale * touchCollisionScale);
+}
+
+bool Game::CheckTouchInRightButton()
+{
+    float rightX = gameScreenWidth - buttonRadius - buttonPadding;
+    float rightY = gameScreenHeight / 2.0f;
+    
+    Vector2 touchPos = GetMousePosition();
+    // Scale touch position to game screen coordinates
+    touchPos.x = (touchPos.x - (GetScreenWidth() - gameScreenWidth * screenScale) * 0.5f) / screenScale;
+    touchPos.y = (touchPos.y - (GetScreenHeight() - gameScreenHeight * screenScale) * 0.5f) / screenScale;
+    
+    float dx = touchPos.x - rightX;
+    float dy = touchPos.y - rightY;
+    return (dx * dx + dy * dy) <= (buttonRadius * buttonRadius * touchCollisionScale * touchCollisionScale);
+}
+
+bool Game::CheckTouchInCenter()
+{
+    float centerX = gameScreenWidth / 2.0f;
+    float centerY = gameScreenHeight / 2.0f;
+    float centerRadius = 100.0f; // Radius of the center area that triggers pause
+    
+    Vector2 touchPos = GetMousePosition();
+    // Scale touch position to game screen coordinates
+    touchPos.x = (touchPos.x - (GetScreenWidth() - gameScreenWidth * screenScale) * 0.5f) / screenScale;
+    touchPos.y = (touchPos.y - (GetScreenHeight() - gameScreenHeight * screenScale) * 0.5f) / screenScale;
+    
+    float dx = touchPos.x - centerX;
+    float dy = touchPos.y - centerY;
+    return (dx * dx + dy * dy) <= (centerRadius * centerRadius);
+}
+
 void Game::UpdateUI()
 {
 #ifndef EMSCRIPTEN_BUILD
-    if (WindowShouldClose() || ((IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false) && !firstTimeGameStart))
+    if (WindowShouldClose() || ((IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false) && !firstTimeGameStart && !isMobile))
     {
         exitWindowRequested = true;
         isInExitMenu = true;
@@ -408,7 +566,7 @@ void Game::UpdateUI()
 
     if (firstTimeGameStart)
     {
-        if (IsKeyPressed(KEY_ENTER))
+        if (IsKeyPressed(KEY_ENTER) || (isMobile && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)))
         {
             firstTimeGameStart = false;
             // Initialize game state first
@@ -419,33 +577,13 @@ void Game::UpdateUI()
 
     if (gameOver)
     {
-        if (IsKeyPressed(KEY_ENTER))
+        if (IsKeyPressed(KEY_ENTER) || (isMobile && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)))
         {
             gameOver = false;
             Reset();
         }
         return;
     }
-
-    
-    #ifdef AM_RAY_DEBUG
-#ifndef EMSCRIPTEN_BUILD
-    if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
-    {
-        if (fullscreen)
-        {
-            fullscreen = false;
-            ToggleBorderlessWindowed();
-            SetWindowPosition(minimizeOffset, minimizeOffset);
-        }
-        else
-        {
-            fullscreen = true;
-            ToggleBorderlessWindowed();
-        }
-    }
-#endif
-#endif
 
     if (exitWindowRequested)
     {
@@ -458,6 +596,7 @@ void Game::UpdateUI()
             exitWindowRequested = false;
             isInExitMenu = false;
         }
+        return;
     }
 
     if (IsWindowFocused() == false)
@@ -470,9 +609,11 @@ void Game::UpdateUI()
     }
 
 #ifndef EMSCRIPTEN_BUILD
-    if (exitWindowRequested == false && lostWindowFocus == false && gameOver == false && isFirstFrameAfterReset == false && IsKeyPressed(KEY_P))
+    if (exitWindowRequested == false && lostWindowFocus == false && gameOver == false && isFirstFrameAfterReset == false && 
+        (IsKeyPressed(KEY_P) || (isMobile && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckTouchInCenter())))
 #else
-    if (exitWindowRequested == false && lostWindowFocus == false && gameOver == false && isFirstFrameAfterReset == false && (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE)))
+    if (exitWindowRequested == false && lostWindowFocus == false && gameOver == false && isFirstFrameAfterReset == false && 
+        (IsKeyPressed(KEY_P) || IsKeyPressed(KEY_ESCAPE) || (isMobile && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckTouchInCenter())))
 #endif
     {
         if (paused)

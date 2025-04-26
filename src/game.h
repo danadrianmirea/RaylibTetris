@@ -43,6 +43,12 @@ public:
     bool gameOver;
     bool audioInitialized;
     bool isMobile;
+    float touchCollisionScale;
+    float buttonSize;
+    float buttonRadius;
+    float buttonPadding;
+    Color buttonColor;
+    Color arrowColor;
 
 private:
     Block GetRandomBlock();
@@ -95,4 +101,13 @@ private:
 
     float screenScale;
     RenderTexture2D targetRenderTex;
+
+    // Mobile touch input functions
+    bool CheckTouchInUpButton();
+    bool CheckTouchInDownButton();
+    bool CheckTouchInLeftButton();
+    bool CheckTouchInRightButton();
+    bool CheckTouchInCenter();
+
+    bool exitWindowRequested;
 };

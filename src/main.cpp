@@ -21,6 +21,9 @@ void MainLoop(void* arg)
 int main()
 {
     InitWindow(gameScreenWidth, gameScreenHeight, "Tetris");
+#ifndef EMSCRIPTEN_BUILD
+    SetWindowState(FLAG_WINDOW_RESIZABLE);
+#endif
 
     if (!IsWindowReady()) {
         return 1;

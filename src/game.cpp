@@ -562,6 +562,21 @@ void Game::UpdateUI()
         isInExitMenu = true;
         return;
     }
+
+    if (IsKeyPressed(KEY_ENTER) && (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT)))
+    {
+        if (fullscreen)
+        {
+            fullscreen = false;
+            ToggleBorderlessWindowed();
+            SetWindowPosition(minimizeOffset, minimizeOffset);
+        }
+        else
+        {
+            fullscreen = true;
+            ToggleBorderlessWindowed();
+        }
+    }    
 #endif
 
     if (firstTimeGameStart)

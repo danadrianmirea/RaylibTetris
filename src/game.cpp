@@ -569,7 +569,6 @@ void Game::UpdateUI()
         {
             fullscreen = false;
             ToggleBorderlessWindowed();
-            SetWindowPosition(minimizeOffset, minimizeOffset);
         }
         else
         {

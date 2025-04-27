@@ -30,8 +30,9 @@ int main()
     }
 
 #ifndef EMSCRIPTEN_BUILD
-    SetWindowPosition(50, 50);
-    ToggleBorderlessWindowed();
+    if (fullscreen) {
+        ToggleBorderlessWindowed();
+    }
 #endif
 
     SetExitKey(KEY_NULL);

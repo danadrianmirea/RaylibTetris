@@ -320,8 +320,13 @@ void Game::DrawUI()
             DrawText("Left/Right Arrow or A/D: Move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
             DrawText("Up Arrow or W: Rotate", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
             DrawText("Down Arrow or S: Soft Drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
+#ifndef EMSCRIPTEN_BUILD
             DrawText("P: Pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
-            DrawText("Press ENTER to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 30), 20, yellow);
+            DrawText("Alt+Enter: Toggle Fullscreen", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 + 20), 15, WHITE);
+#else
+            DrawText("P or ESC: Pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
+#endif
+            DrawText("Press ENTER to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 45), 20, yellow);
         }
     }
     else if (paused)

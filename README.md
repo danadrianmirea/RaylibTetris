@@ -2,6 +2,8 @@
 
 A classic Tetris game implementation using the Raylib game development library.
 
+Play on itch.io: https://adrianmirea.itch.io/
+
 ## Features
 
 - Classic Tetris gameplay

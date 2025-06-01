@@ -114,4 +114,7 @@ private:
     bool CheckTouchInCenter();
 
     bool exitWindowRequested;
+
+    Block GetGhostPiece();
+    void DrawGhostPiece();
 };

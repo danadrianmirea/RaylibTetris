@@ -221,6 +221,7 @@ void Game::Draw()
     BeginTextureMode(targetRenderTex);      
     ClearBackground(BLACK);        
     grid.Draw();
+    DrawGhostPiece();  // Draw ghost piece before the current block
     currentBlock.Draw(0, 0);
     DrawUI();     
     EndTextureMode();
@@ -230,8 +231,6 @@ void Game::Draw()
     DrawTexturePro(targetRenderTex.texture, (Rectangle){0.0f, 0.0f, (float)targetRenderTex.texture.width, (float)-targetRenderTex.texture.height},
                    (Rectangle){(GetScreenWidth() - ((float)gameScreenWidth * screenScale)) * 0.5f, (GetScreenHeight() - ((float)gameScreenHeight * screenScale)) * 0.5f, (float)gameScreenWidth * screenScale, (float)gameScreenHeight * screenScale},
                    (Vector2){0, 0}, 0.0f, WHITE);
-
-    
     EndDrawing();
 }
 
@@ -983,4 +982,32 @@ bool Game::BlockFits(Block block)
         }
     }
     return true;
+}
+
+Block Game::GetGhostPiece()
+{
+    Block ghost = currentBlock;
+    while (true)
+    {
+        ghost.Move(1, 0);
+        if (IsBlockOutside(ghost) || BlockFits(ghost) == false)
+        {
+            ghost.Move(-1, 0);
+            break;
+        }
+    }
+    return ghost;
+}
+
+void Game::DrawGhostPiece()
+{
+    Block ghost = GetGhostPiece();
+    std::vector<Position> tiles = ghost.GetCellPositions();
+    static const int blockGridPadding = gridThickness + 1;
+    
+    for (Position item : tiles)
+    {
+        DrawRectangle(item.column * defCellSize + 10 + blockGridPadding, item.row * defCellSize + 10 + blockGridPadding, defCellSize - blockGridPadding, defCellSize - blockGridPadding, {255, 255, 255, 50}); // Semi-transparent white
+        DrawRectangleLines(item.column * defCellSize + 10 + blockGridPadding, item.row * defCellSize + 10 + blockGridPadding, defCellSize - blockGridPadding, defCellSize - blockGridPadding, {255, 255, 255, 100}); // Slightly more visible border
+    }
 }

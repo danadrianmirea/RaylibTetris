@@ -4,70 +4,40 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "CMake Configure",
+            "label": "build debug",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "-B",
-                "${workspaceFolder}/build",
-                "-S",
-                "${workspaceFolder}",
+                "build",
                 "-DCMAKE_BUILD_TYPE=Debug",
-                "-G",
-                "MinGW Makefiles",
-                "--log-level=VERBOSE"
-            ],
-            "group": "build",
-            "problemMatcher": [],
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
-        },
-        {
-            "label": "CMake Build Debug",
-            "type": "shell",
-            "command": "cmake",
-            "args": [
-                "--build",
-                "${workspaceFolder}/build",
-                "--config",
-                "Debug",
-                "--",
-                "-j4",
-                "--verbose"
+                "."
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": ["CMake Configure"],
-            "problemMatcher": ["$gcc"],
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
+            "problemMatcher": [
+                "$gcc"
+            ]
         },
         {
-            "label": "CMake Build Release",
+            "label": "build release",
             "type": "shell",
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build",
+                "build",
                 "--config",
-                "Release",
-                "--",
-                "-j4",
-                "--verbose"
+                "Release"
             ],
-            "group": "build",
-            "dependsOn": ["CMake Configure"],
-            "problemMatcher": ["$gcc"],
-            "presentation": {
-                "reveal": "always",
-                "panel": "new"
-            }
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }

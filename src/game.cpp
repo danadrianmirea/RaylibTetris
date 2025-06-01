@@ -230,11 +230,7 @@ void Game::DrawUI()
         return;
     }
     
-    const int fontSize = 30;
-    
-    // Draw music toggle text at the top
-    const char* musicText = musicEnabled ? "M: music (ON)" : "M: music (OFF)";
-    DrawTextEx(font, musicText, {gameScreenWidth/2 - MeasureTextEx(font, musicText, fontSize, 2).x/2, 15}, fontSize, 2, WHITE);
+    const int fontSize = 28;
     
     DrawTextEx(font, "Score", {365, 15}, fontSize, 2, WHITE);
     DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, lightBlue);    
@@ -251,6 +247,18 @@ void Game::DrawUI()
     nextBlock.Draw(260, 340);
 
     DrawTextEx(font, TextFormat("Level: %d", currentLevel), {350, 460}, fontSize, 2, WHITE);
+    
+    // Draw music toggle text under the Level text
+    if(!isMobile) {
+        const char* musicText = musicEnabled ? "M:music(ON)" : "M:music(OFF)";
+        DrawTextEx(font, musicText, {325, 500}, fontSize, 2, WHITE);
+#ifndef EMSCRIPTEN_BUILD
+        const char* pauseText = paused ? "P:play" : "P:pause";
+#else
+        const char* pauseText = paused ? "P/ESC:play" : "P/ESC:pause";
+#endif
+        DrawTextEx(font, pauseText, {325, 540}, fontSize, 2, WHITE);
+    }
 
     float scaledWidth = (float)gameScreenWidth;
     float scaledHeight = (float)gameScreenHeight;
@@ -313,7 +321,7 @@ void Game::DrawUI()
     else if (firstTimeGameStart)
     {
         DrawRectangleRounded({xOffset + (scaledWidth / 2 - 215), yOffset + (scaledHeight / 2 - 135), 430, 205}, 0.76f, 20, BLACK);
-        DrawText("RAYLIB TETRIS", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 125), 25, yellow);
+        DrawText("TETRIS", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 125), 25, yellow);
         DrawText("Controls:", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 90), 20, yellow);
         if (isMobile) {
             DrawText("Tap left/right to move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);

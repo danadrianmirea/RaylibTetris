@@ -589,7 +589,7 @@ bool Game::CheckTouchInCenter()
 void Game::UpdateUI()
 {
 #ifndef EMSCRIPTEN_BUILD
-    if (WindowShouldClose() || ((IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false) && !firstTimeGameStart && !isMobile))
+    if (WindowShouldClose() || ((IsKeyPressed(KEY_ESCAPE) && exitWindowRequested == false) && !firstTimeGameStart && !isMobile && !gameOver))
     {
         exitWindowRequested = true;
         isInExitMenu = true;

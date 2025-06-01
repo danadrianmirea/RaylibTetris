@@ -10,6 +10,13 @@
 	},
 	"files.associations": {
 		"array": "cpp",
+		"deque": "cpp",
+		"string": "cpp",
+		"unordered_map": "cpp",
+		"vector": "cpp",
+		"string_view": "cpp",
+		"initializer_list": "cpp",
+		"random": "cpp",
 		"atomic": "cpp",
 		"bit": "cpp",
 		"*.tcc": "cpp",
@@ -25,11 +32,6 @@
 		"cstdlib": "cpp",
 		"cwchar": "cpp",
 		"cwctype": "cpp",
-		"deque": "cpp",
-		"map": "cpp",
-		"string": "cpp",
-		"unordered_map": "cpp",
-		"vector": "cpp",
 		"exception": "cpp",
 		"algorithm": "cpp",
 		"functional": "cpp",
@@ -38,13 +40,10 @@
 		"memory_resource": "cpp",
 		"numeric": "cpp",
 		"optional": "cpp",
-		"random": "cpp",
-		"string_view": "cpp",
 		"system_error": "cpp",
 		"tuple": "cpp",
 		"type_traits": "cpp",
 		"utility": "cpp",
-		"initializer_list": "cpp",
 		"iosfwd": "cpp",
 		"iostream": "cpp",
 		"istream": "cpp",
@@ -56,10 +55,5 @@
 		"streambuf": "cpp",
 		"cinttypes": "cpp",
 		"typeinfo": "cpp"
-	},
-	"cmake.configureOnOpen": true,
-	"cmake.buildDirectory": "${workspaceFolder}/build",
-	"cmake.configureSettings": {
-		"CMAKE_BUILD_TYPE": "Debug"
 	}
 }

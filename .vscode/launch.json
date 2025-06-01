@@ -8,7 +8,7 @@
           "name": "Debug",
           "type": "cppdbg",
           "request": "launch",
-          "program": "${workspaceFolder}/build/RaylibTetris.exe",
+          "program": "${command:cmake.launchTargetPath}",
           "args": [],
           "stopAtEntry": false,
           "cwd": "${workspaceFolder}",
@@ -28,18 +28,18 @@
             "trace": true,
             "traceResponse": true
           },
-          "preLaunchTask": "CMake Build Debug"
+          "preLaunchTask": "CMake Build"
         },
         {
-          "name": "Run without Debugging",
+          "name": "Run",
           "type": "cppdbg",
           "request": "launch",
-          "program": "${workspaceFolder}/build/RaylibTetris.exe",
+          "program": "${command:cmake.launchTargetPath}",
           "args": [],
           "stopAtEntry": false,
           "cwd": "${workspaceFolder}",
           "environment": [],
-          "externalConsole": true,
+          "externalConsole": false,
           "MIMode": "gdb",
           "miDebuggerPath": "gdb",
           "setupCommands": [
@@ -49,7 +49,18 @@
               "ignoreFailures": true
             }
           ],
-          "preLaunchTask": "CMake Build Debug"
+          "preLaunchTask": "CMake Build Release"
+        },
+        {
+          "name": "Run without Debugging",
+          "type": "cppvsdbg",
+          "request": "launch",
+          "program": "${command:cmake.launchTargetPath}",
+          "args": [],
+          "stopAtEntry": false,
+          "cwd": "${workspaceFolder}",
+          "environment": [],
+          "console": "externalTerminal"
         }
       ]
     }

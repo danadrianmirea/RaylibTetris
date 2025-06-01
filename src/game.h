@@ -74,6 +74,7 @@ private:
     bool CheckBlockInAir();
     Sound rotateSound;
     Sound clearSound;
+    Sound dropSound;
     Music backgroundMusic;
     Grid grid;
 

@@ -80,6 +80,7 @@ void Game::StartAudio()
     // Load audio resources after device is initialized
     const char* rotatePath = "Sounds/rotate.mp3";
     const char* clearPath = "Sounds/clear.mp3";
+    const char* dropPath = "Sounds/drop.mp3";
     const char* musicPath = "Sounds/music.mp3";  // Using the new music.mp3 file
 
     if (FileExists(rotatePath)) {
@@ -88,6 +89,10 @@ void Game::StartAudio()
 
     if (FileExists(clearPath)) {
         clearSound = LoadSound(clearPath);
+    }
+
+    if (FileExists(dropPath)) {
+        dropSound = LoadSound(dropPath);
     }
 
     if (FileExists(musicPath)) {
@@ -139,6 +144,7 @@ Game::~Game()
     UnloadFont(font);
     UnloadSound(rotateSound);
     UnloadSound(clearSound);
+    UnloadSound(dropSound);
     UnloadMusicStream(backgroundMusic);
 }
 
@@ -919,7 +925,7 @@ void Game::LockBlock()
     }
     else
     {
-        //PlaySound(rotateSound);
+        //PlaySound(lockSound);
     }
 }
 

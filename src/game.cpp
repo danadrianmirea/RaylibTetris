@@ -81,6 +81,7 @@ void Game::StartAudio()
     const char* rotatePath = "Sounds/rotate.mp3";
     const char* clearPath = "Sounds/clear.mp3";
     const char* dropPath = "Sounds/drop.mp3";
+    const char* lockPath = "Sounds/lock.mp3";
     const char* musicPath = "Sounds/music.mp3";  // Using the new music.mp3 file
 
     if (FileExists(rotatePath)) {
@@ -93,6 +94,10 @@ void Game::StartAudio()
 
     if (FileExists(dropPath)) {
         dropSound = LoadSound(dropPath);
+    }
+
+    if (FileExists(lockPath)) {
+        lockSound = LoadSound(lockPath);
     }
 
     if (FileExists(musicPath)) {
@@ -117,6 +122,7 @@ void Game::InitGame()
     highScore = LoadHighScoreFromFile();
     lockBlockTimer = 0.0f;
     lockBlock = false;
+    firstDrop = true;
     lockStateMoves = 0;
     currentLevel = startingLevel;
     lastInputTime = inputDelay;
@@ -129,6 +135,7 @@ void Game::InitGame()
 void Game::Reset()
 {
     firstTimeGameStart = false;
+    firstDrop = true;
     isFirstFrameAfterReset = true;
     isInExitMenu = false;
     paused = false;
@@ -145,6 +152,7 @@ Game::~Game()
     UnloadSound(rotateSound);
     UnloadSound(clearSound);
     UnloadSound(dropSound);
+    UnloadSound(lockSound);
     UnloadMusicStream(backgroundMusic);
 }
 
@@ -772,6 +780,12 @@ void Game::HardDropBlock()
 
 void Game::SnakeDropBlock()
 {
+    if(firstDrop) 
+    {
+        PlaySound(dropSound);
+        firstDrop = false;
+    }        
+
     while (true)
     {
         currentBlock.Move(1, 0);
@@ -925,8 +939,9 @@ void Game::LockBlock()
     }
     else
     {
-        //PlaySound(lockSound);
+        PlaySound(lockSound);
     }
+    firstDrop = true;
 }
 
 void Game::UpdateScore(int clearedRows)

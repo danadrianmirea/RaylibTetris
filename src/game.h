@@ -75,6 +75,7 @@ private:
     Sound rotateSound;
     Sound clearSound;
     Sound dropSound;
+    Sound lockSound;
     Music backgroundMusic;
     Grid grid;
 
@@ -90,6 +91,7 @@ private:
     float lastRotateInputTime;
     float lastSoftDropTimeTick;
     bool lockBlock;
+    bool firstDrop;
     float lockBlockTimer;
     const float blockLockTime = 0.5f;
     int lockStateMoves;

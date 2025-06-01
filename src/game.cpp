@@ -127,10 +127,7 @@ void Game::InitGame()
     currentLevel = startingLevel;
     lastInputTime = inputDelay;
     lastRotateInputTime = rotateInputDelay;
-    lastSoftDropTimeTick = softDropInputDelay;
     lastDropAfterSpawnTime = 0.0f;  // Initialize the new drop delay timer
-
-    screenScale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 }
 
 void Game::Reset()
@@ -449,7 +446,6 @@ void Game::HandleInput()
     }
 
     lastInputTime += GetFrameTime();
-    lastSoftDropTimeTick += GetFrameTime();
     lastRotateInputTime += GetFrameTime();
     lastDropAfterSpawnTime += GetFrameTime();  // Update the drop delay timer
 
@@ -487,12 +483,11 @@ void Game::HandleInput()
         }
     }
 
-    if (lastSoftDropTimeTick >= softDropInputDelay && lastDropAfterSpawnTime >= dropAfterSpawnDelay)  // Add the spawn delay check
+    if (lastDropAfterSpawnTime >= dropAfterSpawnDelay)
     {
         if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S) || (isMobile && IsMouseButtonDown(MOUSE_LEFT_BUTTON) && CheckTouchInDownButton()))
         {
             SnakeDropBlock();
-            lastSoftDropTimeTick = 0.0f;
         }
     }
 

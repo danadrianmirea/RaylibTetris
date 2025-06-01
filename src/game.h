@@ -89,20 +89,18 @@ private:
     // input stuff
     float lastInputTime;
     float lastRotateInputTime;
-    float lastSoftDropTimeTick;
     float lastDropAfterSpawnTime;
     bool lockBlock;
     bool firstDrop;
     float lockBlockTimer;
-    const float blockLockTime = 0.5f;
+    const float blockLockTime = 0.3f;
     int lockStateMoves;
     const int maxLockStateMoves = 5;
     int currentLevel;
     const int startingLevel = 1;
     const int maxScore = 10000;
     const float inputDelay = 0.1f;
-    const float rotateInputDelay = 0.15f;
-    const float softDropInputDelay = 0.1f;
+    const float rotateInputDelay = 0.2f;
     const float dropAfterSpawnDelay = 0.3f;
 
     float screenScale;

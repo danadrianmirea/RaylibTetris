@@ -90,6 +90,7 @@ private:
     float lastInputTime;
     float lastRotateInputTime;
     float lastSoftDropTimeTick;
+    float lastDropAfterSpawnTime;
     bool lockBlock;
     bool firstDrop;
     float lockBlockTimer;
@@ -102,6 +103,7 @@ private:
     const float inputDelay = 0.1f;
     const float rotateInputDelay = 0.15f;
     const float softDropInputDelay = 0.1f;
+    const float dropAfterSpawnDelay = 0.3f;
 
     float screenScale;
     RenderTexture2D targetRenderTex;

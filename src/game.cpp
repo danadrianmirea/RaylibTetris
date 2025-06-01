@@ -255,7 +255,7 @@ void Game::DrawUI()
 
     DrawRectangleRounded(Rectangle{320, 275, 170, 180}, 0.3, 6, darkGrey);
     DrawTextEx(font, "Next", {365, 275}, fontSize, 2, WHITE);
-    nextBlock.Draw(260, 340);
+    nextBlock.Draw(245, 295); // Center the next piece in its preview box
 
     DrawTextEx(font, TextFormat("Level: %d", currentLevel), {350, 460}, fontSize, 2, WHITE);
     

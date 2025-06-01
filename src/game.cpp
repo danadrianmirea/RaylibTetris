@@ -83,7 +83,7 @@ void Game::StartAudio()
     const char* musicPath = "Sounds/music.mp3";  // Using the new music.mp3 file
 
     if (FileExists(rotatePath)) {
-        manipulateSound = LoadSound(rotatePath);
+        rotateSound = LoadSound(rotatePath);
     }
 
     if (FileExists(clearPath)) {
@@ -137,7 +137,7 @@ Game::~Game()
 {
     UnloadRenderTexture(targetRenderTex);
     UnloadFont(font);
-    UnloadSound(manipulateSound);
+    UnloadSound(rotateSound);
     UnloadSound(clearSound);
     UnloadMusicStream(backgroundMusic);
 }
@@ -446,7 +446,7 @@ void Game::HandleInput()
             goodMove = MoveBlockLeft();
             if (goodMove)
             {
-                // PlaySound(manipulateSound);
+                //PlaySound(rotateSound);
             }
             lastInputTime = 0.0f;
         }
@@ -457,7 +457,7 @@ void Game::HandleInput()
             lastInputTime = 0.0f;
             if (goodMove)
             {
-                // PlaySound(manipulateSound);
+                //PlaySound(rotateSound);
             }
         }
     }
@@ -882,7 +882,7 @@ bool Game::RotateBlock()
         currentBlock.UndoRotation();
         return false;
     }
-    // PlaySound(manipulateSound);
+    PlaySound(rotateSound);
     return true;
 }
 
@@ -919,8 +919,7 @@ void Game::LockBlock()
     }
     else
     {
-
-        // PlaySound(manipulateSound);
+        //PlaySound(rotateSound);
     }
 }
 

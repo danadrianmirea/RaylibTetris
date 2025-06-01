@@ -72,7 +72,7 @@ private:
     void HardDropBlock();
     void SnakeDropBlock();
     bool CheckBlockInAir();
-    Sound manipulateSound;
+    Sound rotateSound;
     Sound clearSound;
     Music backgroundMusic;
     Grid grid;

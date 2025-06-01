@@ -14,9 +14,10 @@ Block::Block()
 void Block::Draw(int offsetX, int offsetY)
 {
     std::vector<Position> tiles = GetCellPositions();
+    static const int blockGridPadding = gridThickness+1;
     for(Position item: tiles)
     {
-        DrawRectangle(offsetX + item.column * cellSize + 11, offsetY + item.row * cellSize + 11, cellSize - 1, cellSize - 1, colors[id]);
+        DrawRectangle(offsetX + item.column * cellSize + 10 + blockGridPadding, offsetY + item.row * cellSize + 10 + blockGridPadding, cellSize - blockGridPadding, cellSize - blockGridPadding, colors[id]);
     }
 }
 

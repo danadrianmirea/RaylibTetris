@@ -222,8 +222,8 @@ void Game::Draw()
     // render everything to a texture
     BeginTextureMode(targetRenderTex);      
     ClearBackground(BLACK);        
-    grid.Draw();      
-    currentBlock.Draw(0, 0);       
+    grid.Draw();
+    currentBlock.Draw(0, 0);
     DrawUI();     
     EndTextureMode();
     // render the scaled frame texture to the screen

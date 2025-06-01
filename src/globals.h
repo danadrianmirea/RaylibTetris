@@ -20,6 +20,7 @@ extern bool fullscreen;
 extern const int minimizeOffset;
 extern float borderOffsetWidth;
 extern float borderOffsetHeight;
+extern const int gridThickness;
 
 extern const Color darkGrey;
 extern const Color green;

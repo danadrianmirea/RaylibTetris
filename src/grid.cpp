@@ -37,6 +37,7 @@ void Grid::Print()
 
 void Grid::Draw()
 {
+    // Draw the grid cells
     for (int row = 0; row < numRows; row++)
     {
         for (int col = 0; col < numCols; col++)
@@ -44,6 +45,22 @@ void Grid::Draw()
             int cellValue = grid[row][col]; 
             DrawRectangle(col * cellSize + 11, row * cellSize + 11, cellSize - 1, cellSize - 1, colors[cellValue]);
         }
+    }
+
+    // Draw grid lines
+    Color gridLineColor = {60, 60, 60, 255};
+    int lineThickness = gridThickness;
+
+    // Draw vertical lines
+    for (int col = 0; col <= numCols; col++)
+    {
+        DrawRectangle(col * cellSize + 10, 11, lineThickness, numRows * cellSize, gridLineColor);
+    }
+
+    // Draw horizontal lines
+    for (int row = 0; row <= numRows; row++)
+    {
+        DrawRectangle(10, row * cellSize + 11, numCols * cellSize, lineThickness, gridLineColor);
     }
 }
 

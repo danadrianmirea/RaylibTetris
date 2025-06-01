@@ -32,7 +32,6 @@ set(HEADERS
 )
 
 # Create executable with explicit target name
-set(TARGET_NAME "RaylibTetris")
 add_executable(${TARGET_NAME} ${SOURCES} ${HEADERS})
 
 # Add raylib as a subdirectory
@@ -77,23 +76,23 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Font DESTINATION ${CMAKE_CURRENT_BINARY_DI
 # Create zip file after build
 if(WIN32)
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Sounds ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris/Sounds
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Font ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris/Font
-        COMMAND powershell -Command "Compress-Archive -Path '${CMAKE_CURRENT_BINARY_DIR}/zip_temp/*' -DestinationPath '${CMAKE_CURRENT_BINARY_DIR}/raylib_tetris.zip' -Force"
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}/
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Sounds ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}/Sounds
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Font ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}/Font
+        COMMAND powershell -Command "Compress-Archive -Path '${CMAKE_CURRENT_BINARY_DIR}/zip_temp/*' -DestinationPath '${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.zip' -Force"
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/zip_temp
-        COMMENT "Creating raylib_tetris.zip"
+         COMMENT "Creating ${PROJECT_NAME}.zip"
     )
 else()
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris
-        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris/
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Sounds ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris/Sounds
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Font ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/raylib_tetris/Font
-        COMMAND zip -r ${CMAKE_CURRENT_BINARY_DIR}/raylib_tetris.zip ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/*
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}
+        COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${TARGET_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}/
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Sounds ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}/Sounds
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_BINARY_DIR}/Font ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/${PROJECT_NAME}/Font
+        COMMAND zip -r ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.zip ${CMAKE_CURRENT_BINARY_DIR}/zip_temp/*
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_BINARY_DIR}/zip_temp
-        COMMENT "Creating raylib_tetris.zip"
+         COMMENT "Creating ${PROJECT_NAME}.zip"
     )
 endif()
 

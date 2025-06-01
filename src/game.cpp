@@ -28,6 +28,7 @@ Game::Game()
     lostWindowFocus = false;
     gameOver = false;
     exitWindowRequested = false;
+    musicEnabled = true;  // Initialize music as enabled
     touchCollisionScale = 3.0f;
     buttonSize = 60.0f;
     buttonRadius = buttonSize / 2.0f;
@@ -230,6 +231,10 @@ void Game::DrawUI()
     }
     
     const int fontSize = 30;
+    
+    // Draw music toggle text at the top
+    const char* musicText = musicEnabled ? "M: music (ON)" : "M: music (OFF)";
+    DrawTextEx(font, musicText, {gameScreenWidth/2 - MeasureTextEx(font, musicText, fontSize, 2).x/2, 15}, fontSize, 2, WHITE);
     
     DrawTextEx(font, "Score", {365, 15}, fontSize, 2, WHITE);
     DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, lightBlue);    
@@ -582,6 +587,20 @@ void Game::UpdateUI()
         }
     }    
 #endif
+
+    // Handle music toggle
+    if (IsKeyPressed(KEY_M))
+    {
+        musicEnabled = !musicEnabled;
+        if (musicEnabled)
+        {
+            PlayMusicStream(backgroundMusic);
+        }
+        else
+        {
+            StopMusicStream(backgroundMusic);
+        }
+    }
 
     if (firstTimeGameStart)
     {

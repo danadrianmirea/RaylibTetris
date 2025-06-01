@@ -43,6 +43,7 @@ public:
     bool gameOver;
     bool audioInitialized;
     bool isMobile;
+    bool musicEnabled;
     float touchCollisionScale;
     float buttonSize;
     float buttonRadius;

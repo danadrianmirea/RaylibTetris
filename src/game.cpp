@@ -221,7 +221,7 @@ void Game::Draw()
 {
     // render everything to a texture
     BeginTextureMode(targetRenderTex);      
-    ClearBackground(darkBlue);        
+    ClearBackground(BLACK);        
     grid.Draw();      
     currentBlock.Draw(0, 0);       
     DrawUI();     
@@ -247,16 +247,16 @@ void Game::DrawUI()
     const int fontSize = 28;
     
     DrawTextEx(font, "Score", {365, 15}, fontSize, 2, WHITE);
-    DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, lightBlue);    
+    DrawRectangleRounded(Rectangle{320, 55, 170, 60}, 0.3, 6, darkGrey);    
     std::string scoreText = FormatWithLeadingZeroes(score, 7);
     DrawTextEx(font, scoreText.c_str(), {355, 65}, fontSize, 2, WHITE);
 
     DrawTextEx(font, "High Score", {325, 135}, fontSize, 2, WHITE);
-    DrawRectangleRounded(Rectangle{320, 175, 170, 60}, 0.3, 6, lightBlue);
+    DrawRectangleRounded(Rectangle{320, 175, 170, 60}, 0.3, 6, darkGrey);
     std::string highScoreText = FormatWithLeadingZeroes(highScore, 7);
     DrawTextEx(font, highScoreText.c_str(), {355, 185}, fontSize, 2, WHITE);
 
-    DrawRectangleRounded(Rectangle{320, 275, 170, 180}, 0.3, 6, lightBlue);
+    DrawRectangleRounded(Rectangle{320, 275, 170, 180}, 0.3, 6, darkGrey);
     DrawTextEx(font, "Next", {365, 275}, fontSize, 2, WHITE);
     nextBlock.Draw(260, 340);
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(RaylibTetris VERSION 1.0 LANGUAGES CXX)
+project(Tetris VERSION 1.0 LANGUAGES CXX)
 
 # Set target name
 set(TARGET_NAME ${PROJECT_NAME})

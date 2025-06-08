@@ -23,6 +23,7 @@ int main()
     InitWindow(gameScreenWidth, gameScreenHeight, "Tetris");
 #ifndef EMSCRIPTEN_BUILD
     SetWindowState(FLAG_WINDOW_RESIZABLE);
+    ToggleBorderlessWindowed();
 #endif
 
     if (!IsWindowReady()) {

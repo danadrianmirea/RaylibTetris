@@ -335,21 +335,21 @@ void Game::DrawUI()
         DrawText("TETRIS", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 125), 25, yellow);
         DrawText("Controls:", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 - 90), 20, yellow);
         if (isMobile) {
-            DrawText("Tap left/right to move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
-            DrawText("Tap up to rotate", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
-            DrawText("Tap down to soft drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
-            DrawText("Tap center to pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
+            DrawText("Tap left/right to move", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
+            DrawText("Tap up to rotate", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
+            DrawText("Tap down to soft drop", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
+            DrawText("Tap center to pause", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2), 15, WHITE);
             DrawText("Tap to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 30), 20, yellow);
         } else {
-            DrawText("Left/Right Arrow or A/D: Move", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
-            DrawText("Up Arrow or W: Rotate", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
-            DrawText("Down Arrow or S: Soft Drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
-            DrawText("Space: Hard Drop", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2), 15, WHITE);
+            DrawText("Left/Right Arrow or A/D: Move", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 - 60), 15, WHITE);
+            DrawText("Up Arrow or W: Rotate", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 - 40), 15, WHITE);
+            DrawText("Down Arrow or S: Soft Drop", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 - 20), 15, WHITE);
+            DrawText("Space: Hard Drop", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2), 15, WHITE);
 #ifndef EMSCRIPTEN_BUILD
-            DrawText("P: Pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 + 20), 15, WHITE);
-            DrawText("Alt+Enter: Toggle Fullscreen", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 + 40), 15, WHITE);
+            DrawText("P: Pause", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 + 20), 15, WHITE);
+            DrawText("Alt+Enter: Toggle Fullscreen", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 + 40), 15, WHITE);
 #else
-            DrawText("P or ESC: Pause", xOffset + (scaledWidth / 2 - 200), yOffset + (scaledHeight / 2 + 20), 15, WHITE);
+            DrawText("P or ESC: Pause", xOffset + (scaledWidth / 2 - 160), yOffset + (scaledHeight / 2 + 20), 15, WHITE);
 #endif
             DrawText("Press ENTER to play", xOffset + (scaledWidth / 2 - 100), yOffset + (scaledHeight / 2 + 65), 20, yellow);
         }

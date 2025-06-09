@@ -1,4 +1,4 @@
-# Raylib Tetris
+# Tetris
 
 A classic Tetris game implementation using the Raylib game development library.
 
